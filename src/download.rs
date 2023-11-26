@@ -60,7 +60,7 @@ async fn fetch_image_bytes_from_date(
         .await
         .map_err(|err| format!("Fetching image bytes - {:#?}", err))?;
 
-    print_step(date, job_id, 3, format!("Converting response to image"));
+    print_step(date, job_id, 3, format!("Saving response as image"));
     let image = image::load_from_memory(&image_bytes)
         .map_err(|err| format!("Parsing image - {:#?}", err))?;
 

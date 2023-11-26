@@ -25,18 +25,14 @@ pub async fn download_all_images(folder: &Path) -> Result<(), String> {
     let bodies = stream::iter(dates)
         .map(|(i, date)| {
             let client = &client;
-            async move {
-                let result = download::download_image(client, date, folder, i, 10).await;
-                result.map(|_| i)
-            }
+            async move { download::download_image(client, date, folder, i, 10).await }
         })
         .buffer_unordered(job_count);
 
     bodies
         .for_each(|result| async {
-            match result {
-                Ok(i) => println!("{i:.0}"),
-                Err(e) => eprintln!("Error: {}", e),
+            if let Err(err) = result {
+                eprintln!("Error: {}", err);
             }
         })
         .await;
