@@ -4,17 +4,18 @@ use image::DynamicImage;
 use reqwest::Client;
 use std::path::Path;
 
+use crate::colors::*;
 use crate::dates::date_to_string;
 
 fn print_step(date: NaiveDate, job_id: usize, step: u32) {
-    let icon = if step == 3 { "\x1b[32m✓\x1b[0m" } else { " " };
+    let icon = if step == 3 { "✓" } else { " " };
     let step = format!(
-        "{}{step}\x1b[2m{}\x1b[0;34m",
+        "{}{step}{DIM}{}{RESET}",
         " ".repeat(step.max(1) as usize - 1),
         "•".repeat(3 - step.min(3) as usize),
     );
     println!(
-        "    \x1b[1m{date}\x1b[0m  \x1b[2m#{job_id:02}\x1b[0m  \x1b[34m[{step}]\x1b[0m {icon}"
+        "    {BOLD}{date}{RESET}  {DIM}#{job_id:02}{RESET}  {BLUE}[{step}{BLUE}]{RESET} {GREEN}{icon}{RESET}"
     );
 }
 
@@ -39,10 +40,10 @@ pub async fn download_image(
                 break;
             }
             Err(err) => {
-                eprintln!("[warning] [Attempt {attempt_no}] {date} Failed: {err}");
+                eprintln!("{YELLOW}[warning] {DIM}[Attempt {attempt_no}]{RESET} {BOLD}{date}{RESET} Failed: {err}");
                 if attempt_no > attempt_count {
                     return Err(format!(
-                        "{date} Failed after {attempt_count} attempts: {err}"
+                        "{BOLD}{date}{RESET} Failed after {attempt_count} attempts: {err}"
                     ));
                 }
             }

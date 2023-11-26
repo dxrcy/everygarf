@@ -1,3 +1,4 @@
+pub mod colors;
 mod dates;
 mod download;
 mod io;
