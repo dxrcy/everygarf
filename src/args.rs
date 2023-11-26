@@ -15,9 +15,9 @@ pub struct Args {
     #[arg(short, long)]
     pub count: bool,
 
-    /// Don't send desktop notifications on error
+    /// Send desktop notifications on error
     #[arg(short, long)]
-    pub quiet: bool,
+    pub notify_error: bool,
 
     /// Remove existing files / clean save folder (not recommended)
     #[arg(long)]
@@ -27,11 +27,11 @@ pub struct Args {
     #[arg(short, long, default_value_t = 15)]
     pub timeout: u64,
 
+    /// Maximum number of concurrent jobs to run
+    #[arg(short, long, default_value_t = 20)]
+    pub jobs: usize,
+
     /// Amount of fetch attempts allowed per thread, before hard error
     #[arg(short, long, default_value_t = 10)]
     pub attempts: u32,
-
-    /// Max concurrent jobs to run
-    #[arg(short, long, default_value_t = 20)]
-    pub jobs: usize,
 }

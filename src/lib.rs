@@ -15,6 +15,7 @@ pub async fn download_all_images(
     folder: &Path,
     dates: &[NaiveDate],
     job_count: usize,
+    attempt_count: u32,
     request_timeout: Duration,
 ) -> Result<(), String> {
     let client = Client::builder()
@@ -23,13 +24,16 @@ pub async fn download_all_images(
         .build()
         .expect("Failed to build request client. This error should never occur.");
 
-    let bodies = stream::iter(dates.into_iter().enumerate())
-        .map(|(i, date)| {
-            let job_id = i % job_count;
-            let client = &client;
-            async move { download::download_image(client, *date, folder, job_id, 10).await }
-        })
-        .buffer_unordered(job_count);
+    let bodies =
+        stream::iter(dates.into_iter().enumerate())
+            .map(|(i, date)| {
+                let job_id = i % job_count;
+                let client = &client;
+                async move {
+                    download::download_image(client, *date, folder, job_id, attempt_count).await
+                }
+            })
+            .buffer_unordered(job_count);
 
     bodies
         .for_each(|result| async {

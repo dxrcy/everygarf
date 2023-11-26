@@ -10,15 +10,10 @@ use std::time::{Duration, Instant};
 async fn main() {
     let args = Args::parse();
 
+    println!("EveryGarf - Comic Downloader");
     let start_time = Instant::now();
-    let result = run_everything(args).await;
 
-    match result {
-        Err(err) => {
-            eprintln!("error: {:#?}", err);
-            std::process::exit(1);
-        }
-
+    match run_downloads(args).await {
         Ok(download_count) => {
             let elapsed_time = format_duration(start_time.elapsed());
 
@@ -26,12 +21,21 @@ async fn main() {
             println!(" • Downloaded: {} files", download_count);
             println!(" • Elapsed: {}", elapsed_time);
         }
+
+        Err(err) => {
+            eprintln!("error: {:#?}", err);
+            std::process::exit(1);
+        }
     }
 }
 
-async fn run_everything(args: Args) -> Result<usize, String> {
+async fn run_downloads(args: Args) -> Result<usize, String> {
     let folder = get_folder_path(args.folder)?;
     let folder_string = folder.to_string_lossy();
+
+    let request_timeout = Duration::from_secs(args.timeout);
+    let job_count = args.jobs;
+    let attempt_count = args.attempts;
 
     if args.remove_all {
         println!("Removing all images in {}", folder_string);
@@ -60,16 +64,13 @@ async fn run_everything(args: Args) -> Result<usize, String> {
         return Ok(0);
     }
 
-    let job_count = args.jobs;
-    let request_timeout = Duration::from_secs(args.timeout);
-
     println!(
         "Downloading {} images using (up to) {} concurrent jobs...",
         missing_dates.len(),
         job_count,
     );
 
-    everygarf::download_all_images(&folder, &missing_dates, job_count, request_timeout).await?;
+    everygarf::download_all_images(&folder, &missing_dates, job_count, attempt_count, request_timeout).await?;
 
     Ok(missing_dates.len())
 }
