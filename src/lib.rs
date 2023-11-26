@@ -4,12 +4,11 @@ mod download;
 mod io;
 
 use chrono::NaiveDate;
-use dates::date_from_filename;
 use futures::{stream, StreamExt};
 use reqwest::Client;
-use std::path::Path;
-use std::time::Duration;
+use std::{path::Path, time::Duration};
 
+use crate::dates::date_from_filename;
 pub use crate::dates::get_all_dates;
 pub use crate::io::{create_target_dir, get_folder_path};
 
