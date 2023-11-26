@@ -23,8 +23,8 @@ pub struct Args {
     #[arg(long)]
     pub remove_all: bool,
 
-    /// Timeout for HTTP requests
-    #[arg(short, long, default_value_t = 15)]
+    /// Timeout for HTTP requests (seconds)
+    #[arg(short, long, default_value_t = 10)]
     pub timeout: u64,
 
     /// Maximum number of concurrent jobs to run
