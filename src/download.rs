@@ -86,7 +86,7 @@ async fn fetch_image_url_from_date(client: &Client, date: NaiveDate) -> Result<S
     let response = client.get(&url).send().await
         .map_err(|err| format!("Fetching webpage body for image url ({url}) - {err}"))?
         .error_for_status()
-        .map_err(|err| format!("Server returned error ({url}) Possibly rate limited by Cloudflare. Try again in a few minutes. - {err}"))?;
+        .map_err(|err| format!("Server returned error status. Possibly rate limited by Cloudflare. Try again in a few minutes, or change IP. - {err}"))?;
 
     let response_body = response
         .text()
