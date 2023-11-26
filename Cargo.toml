@@ -9,6 +9,7 @@ edition = "2021"
 bytes = "1.5.0"
 chrono = "0.4.31"
 clap = { version = "4.4.8", features = ["derive"] }
+dirs-next = "2.0.0"
 futures = "0.3.29"
 image = "0.24.7"
 reqwest = "0.11.22"

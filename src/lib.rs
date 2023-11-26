@@ -1,20 +1,12 @@
 mod dates;
 mod download;
+mod io;
 
 use futures::{stream, StreamExt};
 use reqwest::Client;
-use std::{fs, path::Path};
+use std::path::Path;
 
-pub fn create_empty_target_directory(path: &Path) -> Result<(), String> {
-    if path.exists() {
-        if path.is_file() {
-            return Err(format!("target directory is a file"));
-        }
-        fs::remove_dir_all(path).map_err(|err| format!("remove directory - {:#?}", err))?;
-    }
-    fs::create_dir_all(path).map_err(|err| format!("create directory - {:#?}", err))?;
-    Ok(())
-}
+pub use io::{create_empty_target_directory, get_folder_path};
 
 pub async fn download_all_images(folder: &Path) -> Result<(), String> {
     let job_count = 20;
