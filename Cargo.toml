@@ -3,6 +3,22 @@ name = "everygarf"
 version = "2.0.0"
 edition = "2021"
 authors = ["darcy"]
+description = "Concurrently download every Garfield comic to date"
+license-file = "LICENSE"
+documentation = "https://docs.rs/everygarf/latest/everygarf"
+repository = "https://github.com/darccyy/everygarf"
+homepage = "https://github.com/darccyy/everygarf"
+readme = "README.md"
+keywords = ["download", "garfield", "comic", "concurrent", "cli"]
+categories = ["command-line-utilities", "concurrency"]
+exclude = [
+    ".*",
+    "/target/",
+    "/justfile",
+    "/TODO.md",
+    "/icon.png",
+    "/garfield/",
+]
 
 [dependencies]
 clap = { version = "4.4.8", features = ["derive"] }

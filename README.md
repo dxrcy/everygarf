@@ -1,6 +1,6 @@
-# EveryGarf Comic Downloader
+# EveryGarf - Comic Downloader
 
-A Rust program to download every Garfield comic to date.
+Concurrently download every Garfield comic to date.
 
 ## Stats
 
