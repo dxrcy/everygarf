@@ -114,7 +114,9 @@ async fn fetch_image_bytes_from_url(client: &Client, url: &str) -> Result<Bytes,
         .get(url)
         .send()
         .await
-        .map_err(|err| format!("Fetching image from url ({url}) - {err}"))?;
+        .map_err(|err| format!("Fetching image from url ({url}) - {err}"))?
+        .error_for_status()
+        .map_err(format_status_error)?;
 
     let bytes = response
         .bytes()
