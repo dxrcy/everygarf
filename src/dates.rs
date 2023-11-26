@@ -20,7 +20,7 @@ pub fn get_all_dates() -> Vec<NaiveDate> {
 }
 
 fn first() -> NaiveDate {
-    NaiveDate::from_ymd_opt(2023, 7, 1)
+    NaiveDate::from_ymd_opt(1978, 6, 19)
         .expect("Static date failed to parse. This error should never occur.")
 }
 
