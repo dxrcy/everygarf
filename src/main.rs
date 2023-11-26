@@ -42,7 +42,8 @@ async fn run_downloads(args: Args) -> Result<usize, String> {
     } else {
         println!("Checking for missing images in {}", folder_string);
     }
-    everygarf::create_dir(&folder, args.remove_all)?;
+    everygarf::create_target_dir(&folder, args.remove_all)
+        .map_err(|err| format!("Failed to create or clear target directory - {:#?}", err))?;
 
     let all_dates = everygarf::get_all_dates();
     let existing_dates = everygarf::get_existing_dates(&folder)?;
@@ -70,7 +71,14 @@ async fn run_downloads(args: Args) -> Result<usize, String> {
         job_count,
     );
 
-    everygarf::download_all_images(&folder, &missing_dates, job_count, attempt_count, request_timeout).await?;
+    everygarf::download_all_images(
+        &folder,
+        &missing_dates,
+        job_count,
+        attempt_count,
+        request_timeout,
+    )
+    .await?;
 
     Ok(missing_dates.len())
 }

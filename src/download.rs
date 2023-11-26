@@ -6,6 +6,18 @@ use std::path::Path;
 
 use crate::dates::date_to_string;
 
+fn print_step(date: NaiveDate, job_id: usize, step: u32) {
+    let icon = if step == 3 { "\x1b[32m✓\x1b[0m" } else { " " };
+    let step = format!(
+        "{}{step}\x1b[2m{}\x1b[0;34m",
+        " ".repeat(step.max(1) as usize - 1),
+        "•".repeat(3 - step.min(3) as usize),
+    );
+    println!(
+        "    \x1b[1m{date}\x1b[0m  \x1b[2m#{job_id:02}\x1b[0m  \x1b[34m[{step}]\x1b[0m {icon}"
+    );
+}
+
 pub async fn download_image(
     client: &Client,
     date: NaiveDate,
@@ -18,7 +30,7 @@ pub async fn download_image(
     let filepath = folder.join(filename);
 
     for attempt_no in 1..=attempt_count {
-        let result = fetch_image_bytes_from_date(client, date, job_id).await;
+        let result = fetch_image(client, date, job_id).await;
         match result {
             Ok(image) => {
                 if let Err(err) = image.save(filepath) {
@@ -40,7 +52,7 @@ pub async fn download_image(
     Ok(())
 }
 
-async fn fetch_image_bytes_from_date(
+async fn fetch_image(
     client: &Client,
     date: NaiveDate,
     job_id: usize,
@@ -60,22 +72,6 @@ async fn fetch_image_bytes_from_date(
         .map_err(|err| format!("Parsing image - {:#?}", err))?;
 
     Ok(image)
-}
-
-fn print_step(date: NaiveDate, job_id: usize, step: u32) {
-    // Create tick icon
-    let icon = if step == 3 { "\x1b[32m✓\x1b[0m" } else { " " };
-
-    // Make fancy
-    let step = format!(
-        "{}{step}\x1b[2m{}\x1b[0;34m",
-        " ".repeat(step.max(1) as usize - 1),
-        "•".repeat(3 - step.min(3) as usize),
-    );
-
-    println!(
-        "    \x1b[1m{date}\x1b[0m  \x1b[2m#{job_id:02}\x1b[0m  \x1b[34m[{step}]\x1b[0m {icon}"
-    );
 }
 
 async fn fetch_image_url_from_date(client: &Client, date: NaiveDate) -> Result<String, String> {
