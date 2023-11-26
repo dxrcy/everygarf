@@ -45,29 +45,24 @@ async fn fetch_image_bytes_from_date(
     date: NaiveDate,
     job_id: usize,
 ) -> Result<DynamicImage, String> {
-    print_step(date, job_id, 1, format!("Fetching url of image"));
+    print_step(date, job_id, 1);
     let image_url = fetch_image_url_from_date(client, date)
         .await
         .map_err(|err| format!("Fetching image url - {:#?}", err))?;
 
-    print_step(
-        date,
-        job_id,
-        2,
-        format!("Downloading image from {image_url}"),
-    );
+    print_step(date, job_id, 2);
     let image_bytes = fetch_image_bytes_from_url(client, &image_url)
         .await
         .map_err(|err| format!("Fetching image bytes - {:#?}", err))?;
 
-    print_step(date, job_id, 3, format!("Saving response as image"));
+    print_step(date, job_id, 3);
     let image = image::load_from_memory(&image_bytes)
         .map_err(|err| format!("Parsing image - {:#?}", err))?;
 
     Ok(image)
 }
 
-fn print_step(date: NaiveDate, job_id: usize, step: u32, info: String) {
+fn print_step(date: NaiveDate, job_id: usize, step: u32) {
     // Create tick icon
     let icon = if step == 3 { "\x1b[32m✓\x1b[0m" } else { " " };
 
@@ -78,7 +73,9 @@ fn print_step(date: NaiveDate, job_id: usize, step: u32, info: String) {
         "•".repeat(3 - step.min(3) as usize),
     );
 
-    println!("    \x1b[1m{date}\x1b[0m  \x1b[2m#{job_id:02}\x1b[0m  \x1b[34m[{step}]\x1b[0m {icon} {info}");
+    println!(
+        "    \x1b[1m{date}\x1b[0m  \x1b[2m#{job_id:02}\x1b[0m  \x1b[34m[{step}]\x1b[0m {icon}"
+    );
 }
 
 async fn fetch_image_url_from_date(client: &Client, date: NaiveDate) -> Result<String, String> {

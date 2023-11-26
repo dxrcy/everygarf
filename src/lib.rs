@@ -24,8 +24,9 @@ pub async fn download_all_images(folder: &Path) -> Result<(), String> {
 
     let bodies = stream::iter(dates)
         .map(|(i, date)| {
+            let job_id = i % job_count;
             let client = &client;
-            async move { download::download_image(client, date, folder, i, 10).await }
+            async move { download::download_image(client, date, folder, job_id, 10).await }
         })
         .buffer_unordered(job_count);
 
