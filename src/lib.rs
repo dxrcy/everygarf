@@ -2,23 +2,32 @@ mod dates;
 mod download;
 mod io;
 
+use chrono::NaiveDate;
 use futures::{stream, StreamExt};
 use reqwest::Client;
 use std::path::Path;
+use std::time::Duration;
 
-pub use io::{create_empty_target_directory, get_folder_path};
+pub use crate::dates::get_all_dates;
+pub use crate::io::{create_dir, get_existing_dates, get_folder_path};
 
-pub async fn download_all_images(folder: &Path) -> Result<(), String> {
-    let job_count = 20;
+pub async fn download_all_images(
+    folder: &Path,
+    dates: &[NaiveDate],
+    job_count: usize,
+    request_timeout: Duration,
+) -> Result<(), String> {
+    let client = Client::builder()
+        .user_agent("Mozilla/5.0 (Windows NT 10.0; WOW64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.5666.197 Safari/537.36")
+        .timeout(request_timeout)
+        .build()
+        .expect("Failed to build request client. This error should never occur.");
 
-    let client = Client::new();
-    let dates = dates::get_all_dates().into_iter().enumerate();
-
-    let bodies = stream::iter(dates)
+    let bodies = stream::iter(dates.into_iter().enumerate())
         .map(|(i, date)| {
             let job_id = i % job_count;
             let client = &client;
-            async move { download::download_image(client, date, folder, job_id, 10).await }
+            async move { download::download_image(client, *date, folder, job_id, 10).await }
         })
         .buffer_unordered(job_count);
 

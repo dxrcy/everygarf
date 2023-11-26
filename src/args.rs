@@ -32,6 +32,6 @@ pub struct Args {
     pub attempts: u32,
 
     /// Max concurrent jobs to run
-    #[arg(short, long)]
-    pub jobs: Option<usize>,
+    #[arg(short, long, default_value_t = 20)]
+    pub jobs: usize,
 }

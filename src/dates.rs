@@ -49,3 +49,18 @@ fn get_dates_between(start: NaiveDate, end: NaiveDate) -> Vec<NaiveDate> {
         .map(|days| start + Duration::days(days))
         .collect()
 }
+
+pub fn date_from_filename(filename: &str) -> Option<NaiveDate> {
+    let name = filename.split('/').last()?.split('.').next()?;
+    let mut parts = name.split('-');
+
+    let year = parts.next()?;
+    let month = parts.next()?;
+    let day = parts.next()?;
+
+    let year: i32 = year.parse().ok()?;
+    let month: u32 = month.parse().ok()?;
+    let day: u32 = day.parse().ok()?;
+
+    NaiveDate::from_ymd_opt(year, month, day)
+}

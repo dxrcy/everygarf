@@ -3,6 +3,10 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use chrono::NaiveDate;
+
+use crate::dates::date_from_filename;
+
 pub fn get_folder_path(folder: Option<String>) -> Result<PathBuf, String> {
     let folder = folder.map(|folder| Path::new(&folder).to_path_buf());
 
@@ -40,13 +44,39 @@ fn get_auto_parent_folder() -> Option<PathBuf> {
     Some(dir)
 }
 
-pub fn create_empty_target_directory(path: &Path) -> Result<(), String> {
+pub fn create_dir(path: &Path, remove_existing: bool) -> Result<(), String> {
     if path.exists() {
         if path.is_file() {
             return Err(format!("target directory is a file"));
         }
-        fs::remove_dir_all(path).map_err(|err| format!("remove directory - {:#?}", err))?;
+        if remove_existing {
+            fs::remove_dir_all(path).map_err(|err| format!("remove directory - {:#?}", err))?;
+        } else {
+            return Ok(());
+        }
     }
     fs::create_dir_all(path).map_err(|err| format!("create directory - {:#?}", err))?;
     Ok(())
+}
+
+pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {
+    let mut dates = Vec::new();
+
+    let children = fs::read_dir(folder).map_err(|err| format!("read directory - {:#?}", err))?;
+    for child in children.flatten() {
+        if !child.path().is_file() {
+            continue;
+        }
+        let filename = child.file_name();
+        let Some(filename) = filename.to_str() else {
+            continue;
+        };
+
+        let Some(date) = date_from_filename(filename) else {
+            continue;
+        };
+        dates.push(date);
+    }
+
+    Ok(dates)
 }
