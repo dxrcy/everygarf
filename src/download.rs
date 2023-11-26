@@ -1,7 +1,7 @@
 use bytes::Bytes;
 use chrono::NaiveDate;
 use image::DynamicImage;
-use reqwest::Client;
+use reqwest::{Client, StatusCode};
 use std::path::Path;
 
 use crate::colors::*;
@@ -40,10 +40,10 @@ pub async fn download_image(
                 break;
             }
             Err(err) => {
-                eprintln!("{YELLOW}[warning] {DIM}[Attempt {attempt_no}]{RESET} {BOLD}{date}{RESET} {DIM}#{job_id}{RESET} Failed: {err:#?}");
+                eprintln!("{YELLOW}[warning] {DIM}[Attempt {attempt_no}]{RESET} {BOLD}{date}{RESET} {DIM}#{job_id}{RESET} Failed: {err}");
                 if attempt_no >= attempt_count {
                     return Err(format!(
-                        "{BOLD}{date}{RESET} Failed after {attempt_count} attempts: {err:#?}"
+                        "{BOLD}{date}{RESET} Failed after {attempt_count} attempts: {err}"
                     ));
                 }
             }
@@ -83,10 +83,13 @@ async fn fetch_image_url_from_date(client: &Client, date: NaiveDate) -> Result<S
         date_string
     );
 
-    let response = client.get(&url).send().await
+    let response = client
+        .get(&url)
+        .send()
+        .await
         .map_err(|err| format!("Fetching webpage body for image url ({url}) - {err}"))?
         .error_for_status()
-        .map_err(|err| format!("Server returned error status. Possibly rate limited by Cloudflare. Try again in a few minutes, or change IP. - {err}"))?;
+        .map_err(format_status_error)?;
 
     let response_body = response
         .text()
@@ -119,4 +122,21 @@ async fn fetch_image_bytes_from_url(client: &Client, url: &str) -> Result<Bytes,
         .map_err(|err| format!("Converting image response to bytes ({url}) - {err}"))?;
 
     Ok(bytes)
+}
+
+fn format_status_error(error: reqwest::Error) -> String {
+    let Some(status) = error.status() else {
+        return format!("Unknown error: {:#?}", error);
+    };
+    let code = status.as_u16();
+
+    let message = match (status, code) {
+        (StatusCode::TOO_MANY_REQUESTS, _) => {
+            format!("{CYAN}Rate limited.{RESET} Try again in a few minutes, or change IP.")
+        }
+        (_, 525) => format!("SSL handshake failed with Cloudflare."),
+        _ => return format!("{YELLOW}{}{RESET}", error),
+    };
+
+    format!("{YELLOW}{}{RESET} {}", code, message)
 }
