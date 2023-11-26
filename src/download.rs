@@ -137,7 +137,7 @@ fn format_status_error(error: reqwest::Error) -> String {
             format!("{CYAN}Rate limited.{RESET} Try again in a few minutes, or change IP.")
         }
         (_, 525) => format!("SSL handshake failed with Cloudflare."),
-        _ => return format!("{YELLOW}{}{RESET}", error),
+        _ => return format!("Uncommon error: {YELLOW}{}{RESET}", error),
     };
 
     format!("{YELLOW}{}{RESET} {}", code, message)
