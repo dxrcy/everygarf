@@ -55,10 +55,9 @@ pub async fn download_all_images(
 }
 
 pub fn fatal_error(code: u8, message: String, notify: bool) -> ! {
-    eprintln!(
-        "{RED}-- {BOLD}FATAL ERROR{RESET} {RED}--{RESET}\n{}",
-        message
-    );
+    eprintln!("{RED}=============[ERROR]============={RESET}");
+    eprintln!("{YELLOW}{}", message);
+    eprintln!("{RED}================================={RESET}");
     if notify {
         send_notification(&message);
     }
