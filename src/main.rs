@@ -73,7 +73,6 @@ async fn main() {
             missing_dates.len(),
             job_count,
         );
-        println!("{DIM}Note: Downloads may not be in order{RESET}");
         everygarf::download_all_images(
             &folder,
             &missing_dates,

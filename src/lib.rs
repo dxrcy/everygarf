@@ -42,7 +42,7 @@ pub async fn download_all_images(
                     download::download_image(client, *date, folder, job_id, attempt_count).await
                 }
             })
-            .buffer_unordered(job_count);
+            .buffered(job_count);
 
     bodies
         .for_each(|result| async {
