@@ -1,5 +1,5 @@
 pub mod colors;
-mod dates;
+pub mod dates;
 mod download;
 mod io;
 
@@ -10,7 +10,6 @@ use std::{path::Path, process, time::Duration};
 
 use crate::colors::*;
 use crate::dates::date_from_filename;
-pub use crate::dates::get_all_dates;
 pub use crate::io::{create_target_dir, get_folder_path};
 
 pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {

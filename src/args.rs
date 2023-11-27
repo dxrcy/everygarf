@@ -17,6 +17,9 @@ pub struct Args {
     #[arg(short, long, default_value = None)]
     pub max: Option<usize>,
 
+    #[arg(short, long, default_value = None)]
+    pub start_from: Option<chrono::NaiveDate>,
+
     /// Send desktop notifications on error
     #[arg(short, long)]
     pub notify_error: bool,

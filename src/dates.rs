@@ -15,16 +15,12 @@ pub fn date_to_string(date: NaiveDate, separator: &str, leading_zeros: bool) -> 
         + &day.to_string()
 }
 
-pub fn get_all_dates() -> Vec<NaiveDate> {
-    get_dates_between(first(), latest())
-}
-
-fn first() -> NaiveDate {
+pub fn first() -> NaiveDate {
     NaiveDate::from_ymd_opt(1978, 6, 19)
         .expect("Static date failed to parse. This error should never occur.")
 }
 
-fn latest() -> NaiveDate {
+pub fn latest() -> NaiveDate {
     let now = Utc::now();
 
     // Get naive time (UTC) for when comic is published to gocomics.com
@@ -41,7 +37,7 @@ fn latest() -> NaiveDate {
     now.date_naive() - Duration::days(if now.time() > time_of_publish { 0 } else { 1 })
 }
 
-fn get_dates_between(start: NaiveDate, end: NaiveDate) -> Vec<NaiveDate> {
+pub fn get_dates_between(start: NaiveDate, end: NaiveDate) -> Vec<NaiveDate> {
     (0..=(end - start).num_days())
         .map(|days| start + Duration::days(days))
         .collect()

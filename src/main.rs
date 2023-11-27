@@ -7,7 +7,7 @@ use humantime::format_duration;
 use std::time::{Duration, Instant};
 
 use crate::args::Args;
-use everygarf::colors::*;
+use everygarf::{colors::*, dates};
 
 #[tokio::main]
 async fn main() {
@@ -18,11 +18,12 @@ async fn main() {
 
     let start_time = Instant::now();
     let notify = args.notify_error;
+
     let folder = get_folder_path(args.folder.as_ref().map(String::as_str))
         .unwrap_or_else(|err| fatal_error(2, err, notify));
-
     let folder_string = folder.to_string_lossy();
 
+    let start_date = args.start_from.unwrap_or(dates::first());
     let request_timeout = Duration::from_secs(args.timeout.into());
     let job_count: usize = args.jobs.into();
     let attempt_count: u32 = args.attempts.into();
@@ -45,7 +46,7 @@ async fn main() {
         })
         .unwrap_or_else(|err| fatal_error(2, err, notify));
 
-    let all_dates = everygarf::get_all_dates();
+    let all_dates = dates::get_dates_between(start_date, dates::latest());
     let existing_dates =
         everygarf::get_existing_dates(&folder).unwrap_or_else(|err| fatal_error(2, err, notify));
     let mut missing_dates: Vec<_> = all_dates
@@ -60,7 +61,7 @@ async fn main() {
             total_download_count,
         );
         if total_download_count > 0 {
-            println!("{YELLOW}Note: {DIM}Run without {BOLD}--max{RESET}{YELLOW}{DIM} argument to download everything{RESET}");
+            println!("{YELLOW}Note: {DIM}Run without {BOLD}--max{RESET}{YELLOW}{DIM} argument to download all images{RESET}");
         }
         missing_dates.truncate(max);
     }
@@ -89,6 +90,7 @@ async fn main() {
         .map(|size| human_bytes(size as f64))
         .unwrap_or_else(|_| "???".into());
 
+    println!();
     if total_download_count == 0 {
         println!("{GREEN}{BOLD}Everything is up to date!{RESET}");
     } else {
@@ -100,4 +102,5 @@ async fn main() {
     );
     println!(" {DIM}•{RESET} Elapsed time: {BOLD}{}{RESET}", elapsed_time);
     println!(" {DIM}•{RESET} Total size: {BOLD}{}{RESET}", folder_size);
+    println!();
 }
