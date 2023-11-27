@@ -11,12 +11,13 @@ pub fn get_folder_path(folder: Option<String>) -> Result<PathBuf, String> {
         return Ok(folder);
     }
     if let Some(folder) = get_generic_parent_folder() {
-        return Ok(folder.join(&Path::new("garfield")));
+        return Ok(folder.join(Path::new("garfield")));
     }
 
-    Err(format!(
+    Err(
         "Cannot automatically find appropriate folder location. Please enter folder manually"
-    ))
+            .to_string(),
+    )
 }
 
 fn get_generic_parent_folder() -> Option<PathBuf> {

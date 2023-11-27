@@ -35,7 +35,7 @@ pub async fn download_all_images(
         .expect("Failed to build request client. This error should never occur.");
 
     let bodies =
-        stream::iter(dates.into_iter().enumerate())
+        stream::iter(dates.iter().enumerate())
             .map(|(i, date)| {
                 let job_id = i % job_count;
                 let client = &client;
