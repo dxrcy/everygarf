@@ -60,6 +60,10 @@ Since an official Garfield comic API could not be found, this program scrapes [g
 
 As mentioned above, since each image requires 2 HTTP requests, the program's speed is almost entirely dependent on internet speed. This program attempts to utilize as much concurrency as possible. The only forseeable optimization to this program would be using a different web API.
 
+## Concurrency Level
+
+More concurrent jobs = faster overall download speed, but more CPU usage, and more likely to be rate limited. I would recommend around 20 jobs (`-j 20`), which is the default.
+
 # Automatically Running with Systemd Timer
 
 For systems with `systemd`.
