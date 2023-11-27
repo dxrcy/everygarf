@@ -2,8 +2,12 @@ mod args;
 
 use clap::Parser;
 use everygarf::{fatal_error, get_folder_path};
+use human_bytes::human_bytes;
 use humantime::format_duration;
-use std::time::{Duration, Instant};
+use std::{
+    path::Path,
+    time::{Duration, Instant},
+};
 
 use crate::args::Args;
 use everygarf::colors::*;
@@ -11,33 +15,36 @@ use everygarf::colors::*;
 #[tokio::main]
 async fn main() {
     let args = Args::parse();
-
     println!(" {BOLD}┌─────────────┐{RESET}");
     println!(" {BOLD}│  EveryGarf  │{RESET}");
     println!(" {BOLD}└─────────────┘{RESET} {ITALIC}Comic Downloader{RESET}");
+
     let start_time = Instant::now();
-
     let notify_error = args.notify_error;
-    match run_downloads(args).await {
-        Ok(download_count) => {
-            let elapsed_time = format_duration(Duration::from_secs(start_time.elapsed().as_secs()));
+    let folder = get_folder_path(args.folder.as_ref().map(String::as_str))
+        .unwrap_or_else(|err| fatal_error(2, err, notify_error));
 
-            println!("{GREEN}Complete!{RESET}");
-            println!(
-                " {DIM}•{RESET} Downloaded: {BOLD}{}{RESET} files",
-                download_count
-            );
-            println!(" {DIM}•{RESET} Elapsed time: {BOLD}{}{RESET}", elapsed_time,);
-        }
-        Err(err) => fatal_error(2, err, notify_error),
-    }
+    let result = run_downloads(&folder, args).await;
+    let download_count = result.unwrap_or_else(|err| fatal_error(2, err, notify_error));
+
+    let elapsed_time = format_duration(Duration::from_secs(start_time.elapsed().as_secs()));
+    let folder_size = fs_extra::dir::get_size(folder)
+        .map(|size| human_bytes(size as f64))
+        .unwrap_or_else(|_| "???".into());
+
+    println!("{GREEN}Complete!{RESET}");
+    println!(
+        " {DIM}•{RESET} Downloaded: {BOLD}{}{RESET} images",
+        download_count
+    );
+    println!(" {DIM}•{RESET} Elapsed time: {BOLD}{}{RESET}", elapsed_time);
+    println!(" {DIM}•{RESET} Total size: {BOLD}{}{RESET}", folder_size);
 }
 
-async fn run_downloads(args: Args) -> Result<usize, String> {
-    let folder = get_folder_path(args.folder)?;
+async fn run_downloads(folder: &Path, args: Args) -> Result<usize, String> {
     let folder_string = folder.to_string_lossy();
 
-    let request_timeout = Duration::from_secs(args.timeout);
+    let request_timeout = Duration::from_secs(args.timeout.into());
     let job_count: usize = args.jobs.into();
     let attempt_count: u32 = args.attempts.into();
 

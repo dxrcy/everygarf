@@ -1,4 +1,4 @@
-use std::num::{NonZeroU32, NonZeroUsize};
+use std::num::{NonZeroU32, NonZeroU64, NonZeroUsize};
 
 use clap::Parser;
 
@@ -26,8 +26,8 @@ pub struct Args {
     pub remove_all: bool,
 
     /// Timeout for HTTP requests (seconds)
-    #[arg(short, long, default_value_t = 10)]
-    pub timeout: u64,
+    #[arg(short, long, default_value_t = NonZeroU64::new(10).unwrap())]
+    pub timeout: NonZeroU64,
 
     /// Maximum number of concurrent jobs to run
     #[arg(short, long, default_value_t = NonZeroUsize::new(20).unwrap())]
