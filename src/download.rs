@@ -61,16 +61,16 @@ async fn fetch_image(
     print_step(date, job_id, 1);
     let image_url = fetch_image_url_from_date(client, date)
         .await
-        .map_err(|err| format!("Fetching image url - {:#?}", err))?;
+        .map_err(|err| format!("Fetching image url - {}", err))?;
 
     print_step(date, job_id, 2);
     let image_bytes = fetch_image_bytes_from_url(client, &image_url)
         .await
-        .map_err(|err| format!("Fetching image bytes - {:#?}", err))?;
+        .map_err(|err| format!("Fetching image bytes - {}", err))?;
 
     print_step(date, job_id, 3);
-    let image = image::load_from_memory(&image_bytes)
-        .map_err(|err| format!("Parsing image - {:#?}", err))?;
+    let image =
+        image::load_from_memory(&image_bytes).map_err(|err| format!("Parsing image - {}", err))?;
 
     Ok(image)
 }
