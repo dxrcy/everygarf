@@ -6,8 +6,9 @@ mod io;
 use chrono::NaiveDate;
 use futures::{stream, StreamExt};
 use reqwest::Client;
-use std::{path::Path, time::Duration};
+use std::{path::Path, process, time::Duration};
 
+use crate::colors::*;
 use crate::dates::date_from_filename;
 pub use crate::dates::get_all_dates;
 pub use crate::io::{create_target_dir, get_folder_path};
@@ -25,7 +26,8 @@ pub async fn download_all_images(
     job_count: usize,
     attempt_count: u32,
     request_timeout: Duration,
-) -> Result<(), String> {
+    notify_error: bool,
+) {
     let client = Client::builder()
         .user_agent("Mozilla/5.0 (Windows NT 10.0; WOW64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.5666.197 Safari/537.36")
         .timeout(request_timeout)
@@ -46,11 +48,29 @@ pub async fn download_all_images(
     bodies
         .for_each(|result| async {
             if let Err(err) = result {
-                eprintln!("Error: {}", err);
-                std::process::exit(1);
+                fatal_error(1, err, notify_error);
             }
         })
         .await;
+}
 
-    Ok(())
+pub fn fatal_error(code: u8, message: String, notify: bool) -> ! {
+    eprintln!(
+        "{RED}-- {BOLD}FATAL ERROR{RESET} {RED}--{RESET}\n{}",
+        message
+    );
+    if notify {
+        send_notification(&message);
+    }
+    process::exit(code as i32);
+}
+
+fn send_notification(message: &str) {
+    let message = colors::remove_colors(message);
+    notify_rust::Notification::new()
+        .summary("EveryGarf Failed")
+        .body(&format!("Download failed.\n{}", message))
+        .timeout(Duration::from_secs(10))
+        .show()
+        .expect("Failed to show notification");
 }

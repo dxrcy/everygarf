@@ -1,7 +1,7 @@
 mod args;
 
 use clap::Parser;
-use everygarf::get_folder_path;
+use everygarf::{fatal_error, get_folder_path};
 use humantime::format_duration;
 use std::time::{Duration, Instant};
 
@@ -17,6 +17,7 @@ async fn main() {
     println!(" {BOLD}└─────────────┘{RESET} {ITALIC}Comic Downloader{RESET}");
     let start_time = Instant::now();
 
+    let notify_error = args.notify_error;
     match run_downloads(args).await {
         Ok(download_count) => {
             let elapsed_time = format_duration(Duration::from_secs(start_time.elapsed().as_secs()));
@@ -28,11 +29,7 @@ async fn main() {
             );
             println!(" {DIM}•{RESET} Elapsed time: {BOLD}{}{RESET}", elapsed_time,);
         }
-
-        Err(err) => {
-            eprintln!("{RED}-- {BOLD}ERROR{RESET} {RED}--{RESET}\n{:#?}", err);
-            std::process::exit(1);
-        }
+        Err(err) => fatal_error(2, err, notify_error),
     }
 }
 
@@ -41,8 +38,8 @@ async fn run_downloads(args: Args) -> Result<usize, String> {
     let folder_string = folder.to_string_lossy();
 
     let request_timeout = Duration::from_secs(args.timeout);
-    let job_count = args.jobs;
-    let attempt_count = args.attempts;
+    let job_count: usize = args.jobs.into();
+    let attempt_count: u32 = args.attempts.into();
 
     println!(
         "{} in {UNDERLINE}{}{RESET}",
@@ -94,8 +91,9 @@ async fn run_downloads(args: Args) -> Result<usize, String> {
         job_count,
         attempt_count,
         request_timeout,
+        args.notify_error,
     )
-    .await?;
+    .await;
 
     Ok(missing_dates.len())
 }

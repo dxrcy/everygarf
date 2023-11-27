@@ -1,3 +1,5 @@
+use std::num::{NonZeroU32, NonZeroUsize};
+
 use clap::Parser;
 
 /// EveryGarf Comic Downloader
@@ -28,10 +30,10 @@ pub struct Args {
     pub timeout: u64,
 
     /// Maximum number of concurrent jobs to run
-    #[arg(short, long, default_value_t = 20)]
-    pub jobs: usize,
+    #[arg(short, long, default_value_t = NonZeroUsize::new(20).unwrap())]
+    pub jobs: NonZeroUsize,
 
     /// Amount of fetch attempts allowed per thread, before hard error
-    #[arg(short, long, default_value_t = 10)]
-    pub attempts: u32,
+    #[arg(short, long, default_value_t = NonZeroU32::new(10).unwrap())]
+    pub attempts: NonZeroU32,
 }
