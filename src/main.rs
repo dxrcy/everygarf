@@ -19,8 +19,8 @@ async fn main() {
     let start_time = Instant::now();
     let notify = args.notify_error;
 
-    let folder = get_folder_path(args.folder.as_ref().map(String::as_str))
-        .unwrap_or_else(|err| fatal_error(2, err, notify));
+    let folder =
+        get_folder_path(args.folder.as_deref()).unwrap_or_else(|err| fatal_error(2, err, notify));
     let folder_string = folder.to_string_lossy();
 
     let start_date = args.start_from.unwrap_or(dates::first());
@@ -44,11 +44,11 @@ async fn main() {
                 folder_string, err,
             )
         })
-        .unwrap_or_else(|err| fatal_error(2, err, notify));
+        .unwrap_or_else(|err| fatal_error(3, err, notify));
 
     let all_dates = dates::get_dates_between(start_date, dates::latest());
     let existing_dates =
-        everygarf::get_existing_dates(&folder).unwrap_or_else(|err| fatal_error(2, err, notify));
+        everygarf::get_existing_dates(&folder).unwrap_or_else(|err| fatal_error(4, err, notify));
     let mut missing_dates: Vec<_> = all_dates
         .into_iter()
         .filter(|date| !existing_dates.contains(date))
