@@ -48,22 +48,25 @@ async fn main() {
     let all_dates = everygarf::get_all_dates();
     let existing_dates =
         everygarf::get_existing_dates(&folder).unwrap_or_else(|err| fatal_error(2, err, notify));
-    let missing_dates: Vec<_> = all_dates
+    let mut missing_dates: Vec<_> = all_dates
         .into_iter()
         .filter(|date| !existing_dates.contains(date))
         .collect();
 
-    let download_count = if missing_dates.is_empty() {
-        println!("{GREEN}Everything is up to date!{RESET}");
-        0
-    } else if args.count {
+    let total_download_count = missing_dates.len();
+    if let Some(max) = args.max {
         println!(
-            "There are {BOLD}{}{RESET} missing images to download",
-            missing_dates.len()
+            "There are {BOLD}{}{RESET} total missing images to download",
+            total_download_count,
         );
-        println!("{YELLOW}Note: {DIM}Run without {BOLD}--count{RESET}{YELLOW}{DIM} argument to start download{RESET}");
-        0
-    } else {
+        if total_download_count > 0 {
+            println!("{YELLOW}Note: {DIM}Run without {BOLD}--max{RESET}{YELLOW}{DIM} argument to download everything{RESET}");
+        }
+        missing_dates.truncate(max);
+    }
+    let real_download_count = missing_dates.len();
+
+    if real_download_count > 0 {
         println!(
             "Downloading {BOLD}{}{RESET} images using (up to) {BOLD}{}{RESET} concurrent jobs...{RESET}",
             missing_dates.len(),
@@ -79,19 +82,21 @@ async fn main() {
             notify,
         )
         .await;
-
-        missing_dates.len()
-    };
+    }
 
     let elapsed_time = format_duration(Duration::from_secs(start_time.elapsed().as_secs()));
     let folder_size = fs_extra::dir::get_size(folder)
         .map(|size| human_bytes(size as f64))
         .unwrap_or_else(|_| "???".into());
 
-    println!("{GREEN}Complete!{RESET}");
+    if total_download_count == 0 {
+        println!("{GREEN}{BOLD}Everything is up to date!{RESET}");
+    } else {
+        println!("{GREEN}{BOLD}Complete!{RESET}");
+    }
     println!(
         " {DIM}•{RESET} Downloaded: {BOLD}{}{RESET} images",
-        download_count
+        real_download_count,
     );
     println!(" {DIM}•{RESET} Elapsed time: {BOLD}{}{RESET}", elapsed_time);
     println!(" {DIM}•{RESET} Total size: {BOLD}{}{RESET}", folder_size);

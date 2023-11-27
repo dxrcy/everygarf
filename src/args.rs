@@ -13,9 +13,9 @@ pub struct Args {
     /// Leave blank to use 'garfield' folder in user pictures directory (~/Pictures/garfield)
     pub folder: Option<String>,
 
-    /// Calculate images that are to be downloaded, but don't download anything
-    #[arg(short, long)]
-    pub count: bool,
+    /// Maximum number of images to download
+    #[arg(short, long, default_value = None)]
+    pub max: Option<usize>,
 
     /// Send desktop notifications on error
     #[arg(short, long)]
