@@ -43,7 +43,7 @@ pub async fn download_image(
                 eprintln!("{YELLOW}[warning] {DIM}[Attempt {attempt_no}]{RESET} {BOLD}{date}{RESET} {DIM}#{job_id}{RESET} Failed: {err}");
                 if attempt_no >= attempt_count {
                     return Err(format!(
-                        "{BOLD}{date}{RESET} Failed after {attempt_count} attempts: {err}"
+                        "{RESET}{BOLD}{date}{RESET} Failed after {BOLD}{attempt_count}{RESET} attempts: {err}"
                     ));
                 }
             }
