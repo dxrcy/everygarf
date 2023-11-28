@@ -5,8 +5,14 @@ Concurrently download every Garfield comic to date.
 ## Stats
 
 - Download size: 4.8GB
-- Download time: ~50m-1hr, from a few tests (**THIS WILL BE MUCH FASTER SINCE 2.0.0!!**)
+- Download time: ~20m[*](#download-time)
 - Images: >16,400
+
+### Download time
+
+This was tested a few times, with varying values for `--jobs`, `--timeout`, and `--attempts`.
+Speed is obviously very dependent on your internet speed, which is not great where I live.
+If you are having issues with rate limiting or request timeouts, try experimenting with different parameter values.
 
 # Installation
 
