@@ -60,11 +60,15 @@ If you are having issues with rate limiting or request timeouts, try experimenti
 
 ## API
 
-Since an official Garfield comic API could not be found, this program scrapes [gocomics.com](https://www.gocomics.com/garfield/1978/6/19), and finds the [assets.amuniversal.com](https://assets.amuniversal.com/aead3a905f69012ee3c100163e41dd5b) link. This requires 2 HTTP requests per comic. The files hosted at [picayune.uclick.com](https://picayune.uclick.com/comics/ga/1978/ga780619.gif), while only requiring 1 request each, have been found to be very inconsistent and unstable, therefore are not used.
+Since an official Garfield comic API could not be found, this program scrapes [gocomics.com](https://www.gocomics.com/garfield/1978/6/19), and finds the [assets.amuniversal.com](https://assets.amuniversal.com/aead3a905f69012ee3c100163e41dd5b) link.
+This requires 2 HTTP requests per comic.
+The files hosted at [picayune.uclick.com](https://picayune.uclick.com/comics/ga/1978/ga780619.gif), while only requiring 1 request each, have been found to be very inconsistent and unstable, therefore are not used.
 
 ## Possible speed optimizations
 
-As mentioned above, since each image requires 2 HTTP requests, the program's speed is almost entirely dependent on internet speed. This program attempts to utilize as much concurrency as possible. The only forseeable optimization to this program would be using a different web API.
+As mentioned above, since each image requires 2 HTTP requests, the program's speed is almost entirely dependent on internet speed.
+This program attempts to utilize as much concurrency as possible.
+The only forseeable optimization to this program would be using a different web API.
 
 ## Concurrency Level
 
