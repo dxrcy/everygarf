@@ -125,22 +125,22 @@ async fn fetch_image_bytes_from_url(client: &Client, url: &str) -> Result<Bytes,
 
 fn format_request_error(error: reqwest::Error) -> String {
     if error.is_timeout() {
-        return "Request timed out. If this happens often, check your connection, or change the `--timeout` argument.".to_string();
+        return format!("{YELLOW}Request timed out.{RESET} If this happens often, check your connection, or change the `--timeout` argument." );
     }
 
     let Some(status) = error.status() else {
-        return format!("Unknown error: {:#?}", error);
+        return format!("{MAGENTA}Unknown error:{RESET} {:#?}", error);
     };
     let code = status.as_u16();
 
     let message = match (status, code) {
         (StatusCode::TOO_MANY_REQUESTS, _) => {
-            format!("{CYAN}Rate limited.{RESET} Try again in a few minutes, or change IP.")
+            format!("{RED}Rate limited.{RESET} Try again in a few minutes, or change IP.")
         }
         (_, 525) => "SSL handshake failed with Cloudflare.".to_string(),
         (_, 500) => "Server error - Try again later.".to_string(),
         _ => return format!("Uncommon error: {YELLOW}{}{RESET}", error),
     };
 
-    format!("{YELLOW}{}{RESET} {}", code, message)
+    format!("{YELLOW}{BOLD}{}{RESET} {}", code, message)
 }
