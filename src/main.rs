@@ -92,6 +92,8 @@ async fn main() {
     println!();
     if total_download_count == 0 {
         println!("{GREEN}{BOLD}Everything is up to date!{RESET}");
+    } else if real_download_count == 0 {
+        println!("{GREEN}{BOLD}Nothing downloaded!{RESET}");
     } else {
         println!("{GREEN}{BOLD}Complete!{RESET}");
     }
