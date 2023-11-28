@@ -87,9 +87,9 @@ async fn fetch_image_url_from_date(client: &Client, date: NaiveDate) -> Result<S
         .get(&url)
         .send()
         .await
-        .map_err(|err| format!("Fetching webpage body for image url ({url}) - {err}"))?
+        .map_err(format_request_error)?
         .error_for_status()
-        .map_err(format_status_error)?;
+        .map_err(format_request_error)?;
 
     let response_body = response
         .text()
@@ -114,19 +114,20 @@ async fn fetch_image_bytes_from_url(client: &Client, url: &str) -> Result<Bytes,
         .get(url)
         .send()
         .await
-        .map_err(|err| format!("Fetching image from url ({url}) - {err}"))?
+        .map_err(format_request_error)?
         .error_for_status()
-        .map_err(format_status_error)?;
+        .map_err(format_request_error)?;
 
-    let bytes = response
-        .bytes()
-        .await
-        .map_err(|err| format!("Fetching raw image data ({url}) - {err}"))?;
+    let bytes = response.bytes().await.map_err(format_request_error)?;
 
     Ok(bytes)
 }
 
-fn format_status_error(error: reqwest::Error) -> String {
+fn format_request_error(error: reqwest::Error) -> String {
+    if error.is_timeout() {
+        return "Request timed out. If this happens often, check your connection, or change the `--timeout` argument.".to_string();
+    }
+
     let Some(status) = error.status() else {
         return format!("Unknown error: {:#?}", error);
     };
@@ -137,6 +138,7 @@ fn format_status_error(error: reqwest::Error) -> String {
             format!("{CYAN}Rate limited.{RESET} Try again in a few minutes, or change IP.")
         }
         (_, 525) => "SSL handshake failed with Cloudflare.".to_string(),
+        (_, 500) => "Server error - Try again later.".to_string(),
         _ => return format!("Uncommon error: {YELLOW}{}{RESET}", error),
     };
 
