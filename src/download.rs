@@ -121,7 +121,7 @@ async fn fetch_image_bytes_from_url(client: &Client, url: &str) -> Result<Bytes,
     let bytes = response
         .bytes()
         .await
-        .map_err(|err| format!("Converting image response to bytes ({url}) - {err}"))?;
+        .map_err(|err| format!("Fetching raw image data ({url}) - {err}"))?;
 
     Ok(bytes)
 }
