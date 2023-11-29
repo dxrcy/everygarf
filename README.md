@@ -87,15 +87,16 @@ Otherwise, binary path must be changed in `ExecStart` field in `everygarf.servic
 ```sh
 #!/bin/sh
 # 1. Navigate to user systemd config
-cd ~/.config/systemd/user
+cd ~/.config/systemd/user || exit 1
 
 # 2. Create service file
 # ExecStart path must be absolute, $HOME is interpolated on file create
+# Maximum 50 images at a time
 echo "\
 [Unit]
 Description=Run EveryGarf program to download Garfield comics
 [Service]
-ExecStart=$HOME/.cargo/bin/everygarf
+ExecStart=$HOME/.cargo/bin/everygarf --max 50
 [Install]
 WantedBy=everygarf.timer\
 " > everygarf.service
