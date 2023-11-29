@@ -28,7 +28,7 @@ pub async fn download_all_images(
     notify_error: bool,
 ) {
     let client = Client::builder()
-        .user_agent("Mozilla/5.0 (Windows NT 10.0; WOW64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.5666.197 Safari/537.36")
+        .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36")
         .timeout(request_timeout)
         .build()
         .expect("Failed to build request client. This error should never occur.");
