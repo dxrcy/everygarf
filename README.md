@@ -57,6 +57,7 @@ everygarf ~/Pictures/garfield -rq --attempts 20 --timeout 30
 Download time was tested a few times (since v2.0), with varying values for `--jobs`, `--timeout`, and `--attempts`.
 Speed is obviously very dependent on your internet speed, which is not great where I live.
 If you are having issues with rate limiting or request timeouts, try experimenting with different parameter values.
+Per some basic testing, increasing concurrency seems to have diminishing returns past `--jobs 25`, but this is highly dependent on other factors.
 
 ## API
 
