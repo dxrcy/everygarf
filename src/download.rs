@@ -27,13 +27,14 @@ pub async fn download_image(
     folder: &Path,
     job_id: usize,
     attempt_count: u32,
+    use_proxy: bool,
 ) -> Result<(), String> {
     let filename = date_to_string(date, "-", true) + ".png";
     let filename = Path::new(&filename);
     let filepath = folder.join(filename);
 
     for attempt_no in 1..=attempt_count {
-        let result = fetch_image(client, date, job_id).await;
+        let result = fetch_image(client, date, job_id, use_proxy).await;
         match result {
             Ok(image) => {
                 if let Err(error) = image.save(filepath) {
@@ -59,9 +60,10 @@ async fn fetch_image(
     client: &Client,
     date: NaiveDate,
     job_id: usize,
+    use_proxy: bool,
 ) -> Result<DynamicImage, String> {
     print_step(date, job_id, 1);
-    let image_url = fetch_image_url_from_date(client, date)
+    let image_url = fetch_image_url_from_date(client, date, use_proxy)
         .await
         .map_err(|error| format!("Fetching image url - {}", error))?;
 
@@ -77,8 +79,16 @@ async fn fetch_image(
     Ok(image)
 }
 
-async fn fetch_image_url_from_date(client: &Client, date: NaiveDate) -> Result<String, String> {
-    let url = url::webpage_proxied(date);
+async fn fetch_image_url_from_date(
+    client: &Client,
+    date: NaiveDate,
+    use_proxy: bool,
+) -> Result<String, String> {
+    let url = if use_proxy {
+        url::webpage_proxied(date)
+    } else {
+        url::webpage_unproxied(date)
+    };
 
     let response = client
         .get(&url)

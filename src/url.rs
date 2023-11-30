@@ -6,9 +6,12 @@ use crate::dates::date_to_string;
 use crate::format_request_error;
 
 pub fn webpage_proxied(date: NaiveDate) -> String {
+    with_proxy_service(&webpage_unproxied(date))
+}
+
+pub fn webpage_unproxied(date: NaiveDate) -> String {
     let date_string = date_to_string(date, "/", false);
-    let unproxied = format!("https://www.gocomics.com/garfield/{}", date_string);
-    with_proxy_service(&unproxied)
+    format!("https://www.gocomics.com/garfield/{}", date_string)
 }
 
 pub fn with_proxy_service(url: &str) -> String {

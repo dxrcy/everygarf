@@ -39,4 +39,8 @@ pub struct Args {
     /// Amount of fetch attempts allowed per thread, before hard error
     #[arg(short, long, default_value_t = NonZeroU32::new(10).unwrap())]
     pub attempts: NonZeroU32,
+
+    /// Don't use proxy service for rate limited requests
+    #[arg(long)]
+    pub no_proxy: bool,
 }
