@@ -26,7 +26,7 @@ pub async fn download_all_images(
     job_count: usize,
     attempt_count: u32,
     request_timeout: Duration,
-    notify_error: bool,
+    notify_fail: bool,
 ) {
     let client = Client::builder()
         .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36")
@@ -35,7 +35,7 @@ pub async fn download_all_images(
         .expect("Failed to build request client. This error should never occur.");
 
     if let Err(error) = url::check_proxy_service(&client).await {
-        fatal_error(4, error, notify_error);
+        fatal_error(4, error, notify_fail);
     }
 
     let bodies =
@@ -52,7 +52,7 @@ pub async fn download_all_images(
     bodies
         .for_each(|result| async {
             if let Err(error) = result {
-                fatal_error(1, error, notify_error);
+                fatal_error(1, error, notify_fail);
             }
         })
         .await;

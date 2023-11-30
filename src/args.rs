@@ -22,7 +22,7 @@ pub struct Args {
 
     /// Send desktop notifications on error
     #[arg(short, long)]
-    pub notify_error: bool,
+    pub notify_fail: bool,
 
     /// Remove existing files / clean save folder (not recommended)
     #[arg(long)]
