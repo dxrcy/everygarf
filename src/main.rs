@@ -20,7 +20,7 @@ async fn main() {
     let notify = args.notify_error;
 
     let folder =
-        get_folder_path(args.folder.as_deref()).unwrap_or_else(|err| fatal_error(2, err, notify));
+        get_folder_path(args.folder.as_deref()).unwrap_or_else(|error| fatal_error(2, error, notify));
     let folder_string = folder.to_string_lossy();
 
     let start_date = args.start_from.unwrap_or(dates::first());
@@ -38,17 +38,17 @@ async fn main() {
         folder_string
     );
     everygarf::create_target_dir(&folder, args.remove_all)
-        .map_err(|err| {
+        .map_err(|error| {
             format!(
                 "Failed to create or clear target directory `{}` - {:#?}",
-                folder_string, err,
+                folder_string, error,
             )
         })
-        .unwrap_or_else(|err| fatal_error(3, err, notify));
+        .unwrap_or_else(|error| fatal_error(3, error, notify));
 
     let all_dates = dates::get_dates_between(start_date, dates::latest());
     let existing_dates =
-        everygarf::get_existing_dates(&folder).unwrap_or_else(|err| fatal_error(4, err, notify));
+        everygarf::get_existing_dates(&folder).unwrap_or_else(|error| fatal_error(4, error, notify));
     let mut missing_dates: Vec<_> = all_dates
         .into_iter()
         .filter(|date| !existing_dates.contains(date))
