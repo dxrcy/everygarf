@@ -2,10 +2,11 @@ pub mod colors;
 pub mod dates;
 mod download;
 mod io;
+mod url;
 
 use chrono::NaiveDate;
 use futures::{stream, StreamExt};
-use reqwest::Client;
+use reqwest::{Client, StatusCode};
 use std::{path::Path, process, time::Duration};
 
 use crate::colors::*;
@@ -32,6 +33,10 @@ pub async fn download_all_images(
         .timeout(request_timeout)
         .build()
         .expect("Failed to build request client. This error should never occur.");
+
+    if let Err(error) = url::check_proxy_service(&client).await {
+        fatal_error(4, error, notify_error);
+    }
 
     let bodies =
         stream::iter(dates.iter().enumerate())
@@ -71,4 +76,29 @@ fn send_notification(message: &str) {
         .timeout(Duration::from_secs(10))
         .show()
         .expect("Failed to show notification");
+}
+
+fn format_request_error(error: reqwest::Error) -> String {
+    if error.is_timeout() {
+        return format!("{YELLOW}Request timed out.{RESET} If this happens often, check your connection, or change the `--timeout` argument." );
+    }
+    if error.is_connect() {
+        return format!("{YELLOW}Bad connection.{RESET} Check your internet access.");
+    }
+
+    let Some(status) = error.status() else {
+        return format!("{MAGENTA}Unknown error:{RESET} {:#?}", error);
+    };
+    let code = status.as_u16();
+
+    let message = match (status, code) {
+        (StatusCode::TOO_MANY_REQUESTS, _) => {
+            format!("{RED}Rate limited.{RESET} Try again in a few minutes, or change IP.")
+        }
+        (_, 525) => "SSL handshake failed with Cloudflare.".to_string(),
+        (_, 500) => "Server error - Try again later.".to_string(),
+        _ => return format!("Uncommon error: {YELLOW}{}{RESET}", error),
+    };
+
+    format!("{YELLOW}{BOLD}{}{RESET} {}", code, message)
 }

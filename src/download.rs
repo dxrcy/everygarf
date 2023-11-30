@@ -1,11 +1,13 @@
 use bytes::Bytes;
 use chrono::NaiveDate;
 use image::DynamicImage;
-use reqwest::{Client, StatusCode};
+use reqwest::Client;
 use std::path::Path;
 
 use crate::colors::*;
 use crate::dates::date_to_string;
+use crate::format_request_error;
+use crate::url;
 
 fn print_step(date: NaiveDate, job_id: usize, step: u32) {
     let icon = if step == 3 { "✓" } else { " " };
@@ -76,12 +78,7 @@ async fn fetch_image(
 }
 
 async fn fetch_image_url_from_date(client: &Client, date: NaiveDate) -> Result<String, String> {
-    let date_string = date_to_string(date, "/", false);
-
-    let url = format!(
-        "https://corsproxy.garfieldapp.workers.dev/cors-proxy?https://www.gocomics.com/garfield/{}",
-        date_string
-    );
+    let url = url::webpage_proxied(date);
 
     let response = client
         .get(&url)
@@ -121,26 +118,4 @@ async fn fetch_image_bytes_from_url(client: &Client, url: &str) -> Result<Bytes,
     let bytes = response.bytes().await.map_err(format_request_error)?;
 
     Ok(bytes)
-}
-
-fn format_request_error(error: reqwest::Error) -> String {
-    if error.is_timeout() {
-        return format!("{YELLOW}Request timed out.{RESET} If this happens often, check your connection, or change the `--timeout` argument." );
-    }
-
-    let Some(status) = error.status() else {
-        return format!("{MAGENTA}Unknown error:{RESET} {:#?}", error);
-    };
-    let code = status.as_u16();
-
-    let message = match (status, code) {
-        (StatusCode::TOO_MANY_REQUESTS, _) => {
-            format!("{RED}Rate limited.{RESET} Try again in a few minutes, or change IP.")
-        }
-        (_, 525) => "SSL handshake failed with Cloudflare.".to_string(),
-        (_, 500) => "Server error - Try again later.".to_string(),
-        _ => return format!("Uncommon error: {YELLOW}{}{RESET}", error),
-    };
-
-    format!("{YELLOW}{BOLD}{}{RESET} {}", code, message)
 }
