@@ -93,7 +93,7 @@ echo "\
 [Unit]
 Description=Run EveryGarf program to download Garfield comics
 [Service]
-ExecStart=$HOME/.cargo/bin/everygarf --max 50
+ExecStart=$HOME/.cargo/bin/everygarf --jobs 10 --max 50 --notify-fail
 [Install]
 WantedBy=everygarf.timer\
 " > everygarf.service
