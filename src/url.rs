@@ -15,10 +15,7 @@ pub fn webpage_unproxied(date: NaiveDate) -> String {
 }
 
 pub fn with_proxy_service(url: &str) -> String {
-    format!(
-        "https://corsproxy.garfieldapp.workers.dev/cors-proxy?{}",
-        url
-    )
+    format!("https://proxy.darcy-700.workers.dev/{}", url)
 }
 
 pub async fn check_proxy_service(client: &Client) -> Result<(), String> {
