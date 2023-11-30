@@ -36,16 +36,16 @@ pub async fn download_image(
         let result = fetch_image(client, date, job_id).await;
         match result {
             Ok(image) => {
-                if let Err(err) = image.save(filepath) {
-                    return Err(format!("{date} Failed to save image file - {err}"));
+                if let Err(error) = image.save(filepath) {
+                    return Err(format!("{date} Failed to save image file - {error}"));
                 }
                 break;
             }
-            Err(err) => {
-                eprintln!("{YELLOW}[warning] {DIM}[Attempt {attempt_no}]{RESET} {BOLD}{date}{RESET} {DIM}#{job_id}{RESET} Failed: {err}");
+            Err(error) => {
+                eprintln!("{YELLOW}[warning] {DIM}[Attempt {attempt_no}]{RESET} {BOLD}{date}{RESET} {DIM}#{job_id}{RESET} Failed: {error}");
                 if attempt_no >= attempt_count {
                     return Err(format!(
-                        "{RESET}{BOLD}{date}{RESET} Failed after {BOLD}{attempt_count}{RESET} attempts: {err}"
+                        "{RESET}{BOLD}{date}{RESET} Failed after {BOLD}{attempt_count}{RESET} attempts: {error}"
                     ));
                 }
             }
@@ -63,16 +63,16 @@ async fn fetch_image(
     print_step(date, job_id, 1);
     let image_url = fetch_image_url_from_date(client, date)
         .await
-        .map_err(|err| format!("Fetching image url - {}", err))?;
+        .map_err(|error| format!("Fetching image url - {}", error))?;
 
     print_step(date, job_id, 2);
     let image_bytes = fetch_image_bytes_from_url(client, &image_url)
         .await
-        .map_err(|err| format!("Fetching image bytes - {}", err))?;
+        .map_err(|error| format!("Fetching image bytes - {}", error))?;
 
     print_step(date, job_id, 3);
-    let image =
-        image::load_from_memory(&image_bytes).map_err(|err| format!("Parsing image - {}", err))?;
+    let image = image::load_from_memory(&image_bytes)
+        .map_err(|error| format!("Parsing image - {}", error))?;
 
     Ok(image)
 }
@@ -88,10 +88,9 @@ async fn fetch_image_url_from_date(client: &Client, date: NaiveDate) -> Result<S
         .error_for_status()
         .map_err(format_request_error)?;
 
-    let response_body = response
-        .text()
-        .await
-        .map_err(|err| format!("Converting webpage body for image url to text ({url}) - {err}"))?;
+    let response_body = response.text().await.map_err(|error| {
+        format!("Converting webpage body for image url to text ({url}) - {error}")
+    })?;
 
     let Some(char_index) = response_body.find("https://assets.amuniversal.com") else {
         return Err(format!("Cannot find image url in webpage body ({url})"));

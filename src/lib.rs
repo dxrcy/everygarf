@@ -51,8 +51,8 @@ pub async fn download_all_images(
 
     bodies
         .for_each(|result| async {
-            if let Err(err) = result {
-                fatal_error(1, err, notify_error);
+            if let Err(error) = result {
+                fatal_error(1, error, notify_error);
             }
         })
         .await;
