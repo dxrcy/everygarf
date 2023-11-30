@@ -82,13 +82,10 @@ Installs user service and timer to `~/.config/systemd/user`.
 This assumes that `everygarf` is already [installed with `cargo`](#cargo-from-source).
 Otherwise, binary path must be changed in `ExecStart` field in `everygarf.service`.
 
-> This may not be correct! This has not been tested very well!
-
 ```sh
 #!/bin/sh
 # 1. Navigate to user systemd config
 cd ~/.config/systemd/user || exit 1
-
 # 2. Create service file
 # ExecStart path must be absolute, $HOME is interpolated on file create
 # Maximum 50 images at a time
@@ -100,7 +97,6 @@ ExecStart=$HOME/.cargo/bin/everygarf --max 50
 [Install]
 WantedBy=everygarf.timer\
 " > everygarf.service
-
 # 3. Create timer file
 # Runs shortly after each boot, and every 3 hours
 echo "\
@@ -113,12 +109,13 @@ Unit=everygarf.service
 [Install]
 WantedBy=timers.target\
 " > everygarf.timer
-
 # 4. Enable and start with systemd
 systemctl --user daemon-reload
 systemctl --user enable everygarf.timer
 systemctl --user start everygarf.timer
 ```
+
+> View logs of `everygarf.service` with `journalctl --user --unit everygarf.service --pager-end`
 
 # Disclaimer
 
