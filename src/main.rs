@@ -61,7 +61,7 @@ async fn main() {
             total_download_count,
         );
         if total_download_count > 0 {
-            println!("{YELLOW}Note: {DIM}Run without {BOLD}--max{RESET}{YELLOW}{DIM} argument to download all images{RESET}");
+            println!("{CYAN}Note: {DIM}Run without {BOLD}--max{RESET}{CYAN}{DIM} argument to download all images{RESET}");
         }
         missing_dates.truncate(max);
     }
