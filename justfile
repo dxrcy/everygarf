@@ -15,7 +15,7 @@ cross:
   cd target/x86_64-pc-windows-gnu/release/
 
 # Build program with all targets: debug, release (installed), and x86 Windows release
-build-all:
+all:
   cargo build --release &&\
   just install &&\
   just cross
