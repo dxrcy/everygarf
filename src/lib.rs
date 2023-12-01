@@ -77,7 +77,7 @@ fn send_notification(message: &str) {
     notify_rust::Notification::new()
         .summary("EveryGarf Failed")
         .body(&format!("Download failed.\n{}", message))
-        .timeout(Duration::from_secs(10))
+        .timeout(Duration::from_secs(15))
         .show()
         .expect("Failed to show notification");
 }

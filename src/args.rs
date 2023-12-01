@@ -13,17 +13,26 @@ pub struct Args {
     pub folder: Option<String>,
 
     /// Maximum number of images to download
+    ///
+    /// Use `--max 0` to download no images, only check status
     #[arg(short, long, default_value = None)]
     pub max: Option<usize>,
 
+    /// Only download comics published after this date (inclusive)
+    ///
+    /// Use `--max 1 --start_from <DATE>` to download 1 specific comic
     #[arg(short, long, default_value = None)]
     pub start_from: Option<chrono::NaiveDate>,
 
     /// Send desktop notifications on error
+    ///
+    /// Useful when running in background
     #[arg(short, long)]
     pub notify_fail: bool,
 
     /// Remove existing files / clean save folder (not recommended)
+    ///
+    /// Contributes to 'elapsed time'
     #[arg(long)]
     pub remove_all: bool,
 
@@ -32,6 +41,8 @@ pub struct Args {
     pub timeout: NonZeroU64,
 
     /// Maximum number of concurrent jobs to run
+    ///
+    /// More jobs = faster, but is bottlenecked by network speed after a point
     #[arg(short, long, default_value_t = NonZeroUsize::new(20).unwrap())]
     pub jobs: NonZeroUsize,
 
@@ -39,11 +50,15 @@ pub struct Args {
     #[arg(short, long, default_value_t = NonZeroU32::new(10).unwrap())]
     pub attempts: NonZeroU32,
 
-    /// Url of custom proxy service (see README)
+    /// Url of custom proxy service
+    ///
+    /// See [https://github.com/darccyy/everygarf#proxy-service] for more information
     #[arg(long, conflicts_with = "no_proxy", default_value = everygarf::url::PROXY_DEFAULT)]
     pub proxy: String,
 
-    /// Do not use a proxy service (see README)
+    /// Do not use a proxy service (not recommended)
+    ///
+    /// See [https://github.com/darccyy/everygarf#proxy-service] for more information
     #[arg(long, conflicts_with = "proxy")]
     pub no_proxy: bool,
 }
