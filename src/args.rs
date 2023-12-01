@@ -40,8 +40,8 @@ pub struct Args {
     pub attempts: NonZeroU32,
 
     /// Url of custom proxy service (see README)
-    #[arg(long, conflicts_with = "no_proxy")]
-    pub proxy: Option<String>,
+    #[arg(long, conflicts_with = "no_proxy", default_value = everygarf::url::PROXY_DEFAULT)]
+    pub proxy: String,
 
     /// Do not use a proxy service (see README)
     #[arg(long, conflicts_with = "proxy")]

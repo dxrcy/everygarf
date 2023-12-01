@@ -70,11 +70,7 @@ async fn main() {
     let proxy = if args.no_proxy {
         None
     } else {
-        Some(
-            args.proxy
-                .as_deref()
-                .unwrap_or(everygarf::url::PROXY_DEFAULT),
-        )
+        Some(args.proxy)
     };
 
     if real_download_count > 0 {
