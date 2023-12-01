@@ -46,7 +46,6 @@ pub async fn download_all_images(
         .map(|(i, date)| {
             let job_id = i % job_count;
             let client = &client;
-            let proxy = proxy.clone();
             async move {
                 download::download_image(client, *date, folder, job_id, attempt_count, proxy).await
             }
