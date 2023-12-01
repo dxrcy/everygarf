@@ -24,6 +24,20 @@ pub struct Args {
     #[arg(short, long, default_value = None)]
     pub start_from: Option<chrono::NaiveDate>,
 
+    /// Maximum number of concurrent jobs to run
+    ///
+    /// More jobs = faster, but is bottlenecked by network speed after a point
+    #[arg(short, long, default_value_t = NonZeroUsize::new(20).unwrap())]
+    pub jobs: NonZeroUsize,
+
+    /// Timeout for HTTP requests (seconds)
+    #[arg(short, long, default_value_t = NonZeroU64::new(10).unwrap())]
+    pub timeout: NonZeroU64,
+
+    /// Amount of fetch attempts allowed per thread, before hard error
+    #[arg(short, long, default_value_t = NonZeroU32::new(10).unwrap())]
+    pub attempts: NonZeroU32,
+
     /// Send desktop notifications on error
     ///
     /// Useful when running in background
@@ -35,20 +49,6 @@ pub struct Args {
     /// Contributes to 'elapsed time'
     #[arg(long)]
     pub remove_all: bool,
-
-    /// Timeout for HTTP requests (seconds)
-    #[arg(short, long, default_value_t = NonZeroU64::new(10).unwrap())]
-    pub timeout: NonZeroU64,
-
-    /// Maximum number of concurrent jobs to run
-    ///
-    /// More jobs = faster, but is bottlenecked by network speed after a point
-    #[arg(short, long, default_value_t = NonZeroUsize::new(20).unwrap())]
-    pub jobs: NonZeroUsize,
-
-    /// Amount of fetch attempts allowed per thread, before hard error
-    #[arg(short, long, default_value_t = NonZeroU32::new(10).unwrap())]
-    pub attempts: NonZeroU32,
 
     /// Url of custom proxy service
     ///
