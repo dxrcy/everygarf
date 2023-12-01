@@ -48,9 +48,8 @@ everygarf ~/Pictures/garfield --remove-all --notify-fail --attempts 20 --timeout
 ## Download time
 
 Download time was tested a few times (since v2.0), with varying values for `--jobs`, `--timeout`, and `--attempts`.
-Speed is obviously very dependent on your internet speed, which is not great where I live.
-If you are having issues with rate limiting or request timeouts, try experimenting with different parameter values.
-Per some basic testing, increasing concurrency seems to have diminishing returns past `--jobs 25`, but this is highly dependent on other factors.
+Speed is obviously very dependent on your ping and download speed.
+Per some basic testing, increasing concurrency seems to have diminishing returns past `--jobs 25`.
 
 ## API
 
@@ -63,10 +62,6 @@ The files hosted at [picayune.uclick.com](https://picayune.uclick.com/comics/ga/
 As mentioned above, since each image requires 2 HTTP requests, the program's speed is almost entirely dependent on internet speed.
 This program attempts to utilize as much concurrency as possible.
 The only forseeable optimization to this program would be using a different web API.
-
-## Concurrency level
-
-More concurrent jobs = faster overall download speed, but more CPU usage, and more likely to be rate limited. I would recommend around 20 jobs (`-j 20`), which is the default.
 
 ## Proxy service
 
