@@ -40,7 +40,7 @@ everygarf --help
 everygarf
 
 # Change some options
-everygarf ~/Pictures/garfield -rq --attempts 20 --timeout 30
+everygarf ~/Pictures/garfield --remove-all --notify-fail --attempts 20 --timeout 30 --jobs 40 --max 300
 ```
 
 # About
