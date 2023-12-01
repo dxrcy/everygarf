@@ -12,7 +12,7 @@ Concurrently download every Garfield comic to date.
 
 ## Binary
 
-[Download latest release](https://github.com/darccyy/everygarf/releases/latest) (portable executable)
+[Download latest release](https://github.com/darccyy/everygarf/releases/latest) (executable)
 
 ## Cargo (from source)
 
@@ -32,21 +32,14 @@ cargo install --path everygarf
 
 # Usage
 
-Help information
-
 ```sh
+# Help information
 everygarf --help
-```
 
-Download to default folder ('garfield' in user pictures directory)
-
-```sh
+# Download to default folder ('garfield' in user pictures directory)
 everygarf
-```
 
-Change some options
-
-```sh
+# Change some options
 everygarf ~/Pictures/garfield -rq --attempts 20 --timeout 30
 ```
 
@@ -77,15 +70,11 @@ More concurrent jobs = faster overall download speed, but more CPU usage, and mo
 
 ## Proxy service
 
-**TODO**
-
 Default proxy url is `https://proxy.darcy-700.worker.dev`, a simple Cloudflare worker.
 
 ### Setup a custom proxy service with Cloudflare worker
 
 Setup a Cloudflare worker with [https://github.com/Zibri/cloudflare-cors-anywhere](Zibri/cloudflare-cors-anywhere), and pass in the url with `--proxy`.
-
-**TODO**
 
 ### Disable proxy
 
