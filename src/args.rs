@@ -3,7 +3,7 @@ use std::num::{NonZeroU32, NonZeroU64, NonZeroUsize};
 
 /// EveryGarf Comic Downloader
 ///
-/// Download every Garfield comic, to date
+/// Concurrently download every Garfield comic to date
 #[derive(Parser)]
 #[command(author, version, about)]
 pub struct Args {
