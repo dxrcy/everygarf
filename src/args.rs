@@ -1,6 +1,5 @@
-use std::num::{NonZeroU32, NonZeroU64, NonZeroUsize};
-
 use clap::Parser;
+use std::num::{NonZeroU32, NonZeroU64, NonZeroUsize};
 
 /// EveryGarf Comic Downloader
 ///
@@ -40,7 +39,11 @@ pub struct Args {
     #[arg(short, long, default_value_t = NonZeroU32::new(10).unwrap())]
     pub attempts: NonZeroU32,
 
-    /// Don't use proxy service for rate limited requests
-    #[arg(long)]
+    /// Url of custom proxy service (see README)
+    #[arg(long, conflicts_with = "no_proxy")]
+    pub proxy: Option<String>,
+
+    /// Do not use a proxy service (see README)
+    #[arg(long, conflicts_with = "proxy")]
     pub no_proxy: bool,
 }

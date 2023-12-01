@@ -2,7 +2,7 @@ pub mod colors;
 pub mod dates;
 mod download;
 mod io;
-mod url;
+pub mod url;
 
 use chrono::NaiveDate;
 use futures::{stream, StreamExt};
@@ -27,7 +27,7 @@ pub async fn download_all_images(
     attempt_count: u32,
     request_timeout: Duration,
     notify_fail: bool,
-    use_proxy: bool,
+    proxy: Option<&str>,
 ) {
     let client = Client::builder()
         .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36")
@@ -35,8 +35,8 @@ pub async fn download_all_images(
         .build()
         .expect("Failed to build request client. This error should never occur.");
 
-    if use_proxy {
-        if let Err(error) = url::check_proxy_service(&client).await {
+    if let Some(proxy) = proxy {
+        if let Err(error) = url::check_proxy_service(&client, proxy).await {
             fatal_error(4, error, notify_fail);
         }
     }
@@ -45,9 +45,9 @@ pub async fn download_all_images(
         .map(|(i, date)| {
             let job_id = i % job_count;
             let client = &client;
+            let proxy = proxy.clone();
             async move {
-                download::download_image(client, *date, folder, job_id, attempt_count, use_proxy)
-                    .await
+                download::download_image(client, *date, folder, job_id, attempt_count, proxy).await
             }
         })
         .buffered(job_count);

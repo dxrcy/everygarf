@@ -3,3 +3,6 @@ add tests :(
 add cli options
     use tree file structure
     choose file format (jpg)
+
+proxy setup
+    add instructions to readme

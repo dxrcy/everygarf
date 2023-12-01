@@ -67,6 +67,16 @@ async fn main() {
     }
     let real_download_count = missing_dates.len();
 
+    let proxy = if args.no_proxy {
+        None
+    } else {
+        Some(
+            args.proxy
+                .as_deref()
+                .unwrap_or(everygarf::url::PROXY_DEFAULT),
+        )
+    };
+
     if real_download_count > 0 {
         println!(
             "Downloading {BOLD}{}{RESET} images using (up to) {BOLD}{}{RESET} concurrent jobs...{RESET}",
@@ -80,7 +90,7 @@ async fn main() {
             attempt_count,
             request_timeout,
             notify_fail,
-            !args.no_proxy,
+            proxy,
         )
         .await;
     }
