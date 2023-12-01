@@ -75,9 +75,22 @@ The only forseeable optimization to this program would be using a different web 
 
 More concurrent jobs = faster overall download speed, but more CPU usage, and more likely to be rate limited. I would recommend around 20 jobs (`-j 20`), which is the default.
 
-## Custom proxy service
+## Proxy service
 
 **TODO**
+
+Default proxy url is `https://proxy.darcy-700.worker.dev`, a simple Cloudflare worker.
+
+### Setup a custom proxy service with Cloudflare worker
+
+Setup a Cloudflare worker with [https://github.com/Zibri/cloudflare-cors-anywhere](Zibri/cloudflare-cors-anywhere), and pass in the url with `--proxy`.
+
+**TODO**
+
+### Disable proxy
+
+Use `--no-proxy` argument.
+This is not recommended, you will most likely get immediately rate limited by [gocomics.com](https://www.gocomics.com/garfield/1978/6/19).
 
 # Automatically Running with Systemd Timer
 
