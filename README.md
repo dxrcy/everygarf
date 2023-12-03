@@ -67,7 +67,7 @@ The only forseeable optimization to this program would be using a different web 
 
 ## Proxy service
 
-Default proxy url is `https://proxy.darcy-700.worker.dev`, a simple Cloudflare worker.
+Default proxy url is `https://proxy.darcy-700.workers.dev`, a simple Cloudflare worker.
 If you are continually seeing 'rate limited' (HTTP/429) error, try changing the proxy service.
 See [Setup a custom proxy service with Cloudflare worker](#setup-a-custom-proxy-service-with-cloudflare-worker).
 
@@ -164,12 +164,12 @@ npm run deploy
 
 7. Test the deployment
 
-[https://myproxy.YOURUSERNAME.worker.dev/cors-proxy?https://gocomics.com/garfield/2001/9/10](https://myproxy.YOURUSERNAME.worker.dev/cors-proxy?https://gocomics.com/garfield/2001/9/10)
+[https://myproxy.YOURUSERNAME.workers.dev/cors-proxy?https://gocomics.com/garfield/2001/9/10](https://myproxy.YOURUSERNAME.workers.dev/cors-proxy?https://gocomics.com/garfield/2001/9/10)
 
 8. Use proxy with `everygarf`
 
 ```sh
-everygarf --proxy "https://myproxy.<YOURUSERNAME>.worker.dev/cors-proxy"
+everygarf --proxy "https://myproxy.<YOURUSERNAME>.workers.dev/cors-proxy"
 ```
 
 # Disclaimer
