@@ -68,7 +68,10 @@ The only forseeable optimization to this program would be using a different web 
 ## Proxy service
 
 Default proxy url is `https://proxy.darcy-700.workers.dev`, a simple Cloudflare worker.
-If you are continually seeing 'rate limited' (HTTP/429) error, try changing the proxy service.
+If you are continually seeing 'rate limited' (HTTP/429) error, try changing the proxy url (below).
+
+### Custom proxy service
+
 See [Setup a custom proxy service with Cloudflare worker](#setup-a-custom-proxy-service-with-cloudflare-worker).
 
 ### Disable proxy
