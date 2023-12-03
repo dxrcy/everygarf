@@ -131,16 +131,10 @@ Setup a Cloudflare worker with [Zibri/cloudflare-cors-anywhere](https://github.c
 ```sh
 git clone https://github.com/darccyy/cloudflare-cors-anywhere myproxy
 cd myproxy
-npm install
-```
-
-4. Install [wrangler](https://developers.cloudflare.com/workers/wrangler/) (Cloudflare worker CLI)
-
-```sh
 npm install --include=dev
 ```
 
-5. Login to wrangler
+4. Login to [wrangler](https://developers.cloudflare.com/workers/wrangler/) (Cloudflare worker CLI)
 
 Log in to your Cloudflare account through the browser.
 
@@ -156,23 +150,23 @@ account_id = "{{ account-id }}"
 # ...
 ```
 
-6. Run in development mode
+5. Run in development mode
 
 ```sh
 npm run dev
 ```
 
-7. Deploy to Cloudflare
+6. Deploy to Cloudflare
 
 ```sh
 npm run deploy
 ```
 
-8. Test the deployment
+7. Test the deployment
 
 [https://myproxy.YOURUSERNAME.worker.dev/cors-proxy?https://gocomics.com/garfield/2001/9/10](https://myproxy.YOURUSERNAME.worker.dev/cors-proxy?https://gocomics.com/garfield/2001/9/10)
 
-9. Use proxy with `everygarf`
+8. Use proxy with `everygarf`
 
 ```sh
 everygarf --proxy "https://myproxy.<YOURUSERNAME>.worker.dev/cors-proxy"
