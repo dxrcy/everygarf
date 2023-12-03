@@ -51,6 +51,8 @@ Download time was tested a few times (since v2.0), with varying values for `--jo
 Speed is obviously very dependent on your ping and download speed.
 Per some basic testing, increasing concurrency seems to have diminishing returns past `--jobs 25`.
 
+![Graph of download speed to job count, showing exponential falloff from range 1-20, then settling on a similar rate from range 20-100](./image/download-speed-graph.png)
+
 ## API
 
 Since an official Garfield comic API could not be found, this program scrapes [gocomics.com](https://www.gocomics.com/garfield/1978/6/19), and finds the [assets.amuniversal.com](https://assets.amuniversal.com/aead3a905f69012ee3c100163e41dd5b) link.
@@ -126,5 +128,5 @@ If you have any issues or concerns, please [create a GitHub issue](https://githu
 
 ---
 
-![Icon: Stylized Garfield Face](./icon.png)
+![Icon: Stylized Garfield Face](./image/icon.png)
 

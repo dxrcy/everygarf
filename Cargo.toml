@@ -16,7 +16,7 @@ exclude = [
     "/target/",
     "/justfile",
     "/TODO.md",
-    "/icon.png",
+    "/image/",
     "/garfield/",
 ]
 
