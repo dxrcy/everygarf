@@ -61,4 +61,13 @@ pub struct Args {
     /// See [https://github.com/darccyy/everygarf#proxy-service] for more information
     #[arg(long, conflicts_with = "proxy")]
     pub no_proxy: bool,
+
+    #[arg(long, short, conflicts_with = "no_cache", default_value = everygarf::url::CACHE_DEFAULT)]
+    pub cache_url: String,
+
+    #[arg(long, conflicts_with = "no_cache")]
+    pub save_cache: bool,
+
+    #[arg(long, conflicts_with = "cache_url", conflicts_with = "save_cache")]
+    pub no_cache: bool,
 }

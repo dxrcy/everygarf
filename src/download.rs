@@ -8,6 +8,7 @@ use crate::colors::*;
 use crate::dates::date_to_string;
 use crate::format_request_error;
 use crate::url;
+use crate::DateUrlCached;
 
 fn print_step(date: NaiveDate, job_id: usize, step: u32) {
     let icon = if step == 3 { "✓" } else { " " };
@@ -23,30 +24,34 @@ fn print_step(date: NaiveDate, job_id: usize, step: u32) {
 
 pub async fn download_image(
     client: &Client,
-    date: NaiveDate,
+    date_cached: DateUrlCached,
     folder: &Path,
     job_id: usize,
     attempt_count: u32,
     proxy: Option<&str>,
 ) -> Result<(), String> {
-    let filename = date_to_string(date, "-", true) + ".png";
+    let filename = date_to_string(date_cached.date, "-", true) + ".png";
     let filename = Path::new(&filename);
     let filepath = folder.join(filename);
 
     for attempt_no in 1..=attempt_count {
-        let result = fetch_image(client, date, job_id, proxy).await;
+        let result = fetch_image(client, &date_cached, job_id, proxy).await;
         match result {
             Ok(image) => {
                 if let Err(error) = image.save(filepath) {
-                    return Err(format!("{date} Failed to save image file - {error}"));
+                    return Err(format!(
+                        "{} Failed to save image file - {error}",
+                        date_cached.date,
+                    ));
                 }
                 break;
             }
             Err(error) => {
-                eprintln!("{YELLOW}[warning] {DIM}[Attempt {attempt_no}]{RESET} {BOLD}{date}{RESET} {DIM}#{job_id}{RESET} Failed: {error}");
+                eprintln!("{YELLOW}[warning] {DIM}[Attempt {attempt_no}]{RESET} {BOLD}{}{RESET} {DIM}#{job_id}{RESET} Failed: {error}", date_cached.date);
                 if attempt_no >= attempt_count {
                     return Err(format!(
-                        "{RESET}{BOLD}{date}{RESET} Failed after {BOLD}{attempt_count}{RESET} attempts: {error}"
+                        "{RESET}{BOLD}{}{RESET} Failed after {BOLD}{attempt_count}{RESET} attempts: {error}",
+                        date_cached.date,
                     ));
                 }
             }
@@ -58,21 +63,24 @@ pub async fn download_image(
 
 async fn fetch_image(
     client: &Client,
-    date: NaiveDate,
+    date_cached: &DateUrlCached,
     job_id: usize,
     proxy: Option<&str>,
 ) -> Result<DynamicImage, String> {
-    print_step(date, job_id, 1);
-    let image_url = fetch_image_url_from_date(client, date, proxy)
-        .await
-        .map_err(|error| format!("Fetching image url - {}", error))?;
+    print_step(date_cached.date, job_id, 1);
+    let image_url = match &date_cached.url {
+        Some(url) => url.to_owned(),
+        None => fetch_image_url_from_date(client, date_cached.date, proxy)
+            .await
+            .map_err(|error| format!("Fetching image url - {}", error))?,
+    };
 
-    print_step(date, job_id, 2);
+    print_step(date_cached.date, job_id, 2);
     let image_bytes = fetch_image_bytes_from_url(client, &image_url)
         .await
         .map_err(|error| format!("Fetching image bytes - {}", error))?;
 
-    print_step(date, job_id, 3);
+    print_step(date_cached.date, job_id, 3);
     let image = image::load_from_memory(&image_bytes)
         .map_err(|error| format!("Parsing image - {}", error))?;
 

@@ -6,6 +6,8 @@ use crate::dates::date_to_string;
 use crate::format_request_error;
 
 pub const PROXY_DEFAULT: &str = "https://proxy.darcy-700.workers.dev/cors-proxy";
+pub const CACHE_DEFAULT: &str =
+    "https://raw.githubusercontent.com/darccyy/everygarf-cache/master/everygarf.cache";
 
 pub fn webpage_proxied(date: NaiveDate, proxy: Option<&str>) -> String {
     let url = webpage_unproxied(date);

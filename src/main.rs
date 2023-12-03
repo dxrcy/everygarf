@@ -1,7 +1,7 @@
 mod args;
 
 use clap::Parser;
-use everygarf::{fatal_error, get_folder_path};
+use everygarf::{fatal_error, get_folder_path, DateUrlCached};
 use human_bytes::human_bytes;
 use humantime::format_duration;
 use std::time::{Duration, Instant};
@@ -49,9 +49,13 @@ async fn main() {
     let all_dates = dates::get_dates_between(start_date, dates::latest());
     let existing_dates = everygarf::get_existing_dates(&folder)
         .unwrap_or_else(|error| fatal_error(4, error, notify_fail));
+
+    let _cached_dates = Vec::<DateUrlCached>::new();
+
     let mut missing_dates: Vec<_> = all_dates
         .into_iter()
         .filter(|date| !existing_dates.contains(date))
+        .map(|date| DateUrlCached { date, url: None })
         .collect();
 
     let total_download_count = missing_dates.len();

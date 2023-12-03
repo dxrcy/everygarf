@@ -20,9 +20,15 @@ pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {
         .collect())
 }
 
+#[derive(Clone)]
+pub struct DateUrlCached {
+    pub date: NaiveDate,
+    pub url: Option<String>,
+}
+
 pub async fn download_all_images(
     folder: &Path,
-    dates: &[NaiveDate],
+    dates: &[DateUrlCached],
     job_count: usize,
     attempt_count: u32,
     request_timeout: Duration,
@@ -43,11 +49,19 @@ pub async fn download_all_images(
     }
 
     let bodies = stream::iter(dates.iter().enumerate())
-        .map(|(i, date)| {
+        .map(|(i, date_cached)| {
             let job_id = i % job_count;
             let client = &client;
             async move {
-                download::download_image(client, *date, folder, job_id, attempt_count, proxy).await
+                download::download_image(
+                    client,
+                    date_cached.clone(),
+                    folder,
+                    job_id,
+                    attempt_count,
+                    proxy,
+                )
+                .await
             }
         })
         .buffered(job_count);
