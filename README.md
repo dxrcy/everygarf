@@ -122,7 +122,7 @@ systemctl --user start everygarf.timer
 
 # Setup a custom proxy service with Cloudflare worker
 
-Setup a Cloudflare worker with [https://github.com/Zibri/cloudflare-cors-anywhere](Zibri/cloudflare-cors-anywhere), and pass in the url with `--proxy`.
+Setup a Cloudflare worker with [Zibri/cloudflare-cors-anywhere](https://github.com/darccyy/cloudflare-cors-anywhere), and pass in the url with `--proxy`.
 
 1. [Create a Cloudflare account](https://dash.cloudflare.com/sign-up)
 2. Install [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (Node package manager)
