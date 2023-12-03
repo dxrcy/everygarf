@@ -125,6 +125,8 @@ systemctl --user start everygarf.timer
 
 # Setup a custom proxy service with Cloudflare worker
 
+> This has not been tested very well! It works on my machine, but if you have any problems, please [open an issue](https://github.com/darccyy/everygarf/issues/new)
+
 Setup a Cloudflare worker with [Zibri/cloudflare-cors-anywhere](https://github.com/darccyy/cloudflare-cors-anywhere), and pass in the url with `--proxy`.
 
 1. [Create a Cloudflare account](https://dash.cloudflare.com/sign-up)
@@ -178,7 +180,7 @@ everygarf --proxy "https://myproxy.<YOURUSERNAME>.workers.dev/cors-proxy"
 # Disclaimer
 
 This project has no connection to *Garfield* or *Paws, Inc*. 
-If you have any issues or concerns, please [create a GitHub issue](https://github.com/darccyy/everygarf/issues/new).
+If you have any issues or concerns, please [open a GitHub issue](https://github.com/darccyy/everygarf/issues/new).
 
 ---
 
