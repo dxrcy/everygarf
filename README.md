@@ -49,9 +49,9 @@ everygarf ~/Pictures/garfield --remove-all --notify-fail --attempts 20 --timeout
 
 Download time was tested a few times (since v2.0), with varying values for `--jobs`, `--timeout`, and `--attempts`.
 Speed is obviously very dependent on your ping and download speed.
-Per some basic testing, increasing concurrency seems to have diminishing returns past `--jobs 25`.
+Per some basic testing, increasing concurrency seems to have diminishing returns past `--jobs 20`.
 
-![Graph of download speed to job count, showing exponential falloff from range 1-20, then settling on a similar rate from range 20-100](./image/download-speed-graph.png)
+![Graph of download speed to job count, with trend line showing rapid falloff from range 1-20, then settling on a similar rate from range 20-100](./image/download-speed-graph.png)
 
 ## API
 
@@ -68,10 +68,8 @@ The only forseeable optimization to this program would be using a different web 
 ## Proxy service
 
 Default proxy url is `https://proxy.darcy-700.worker.dev`, a simple Cloudflare worker.
-
-### Setup a custom proxy service with Cloudflare worker
-
-Setup a Cloudflare worker with [https://github.com/Zibri/cloudflare-cors-anywhere](Zibri/cloudflare-cors-anywhere), and pass in the url with `--proxy`.
+If you are continually seeing 'rate limited' (HTTP/429) error, try changing the proxy service.
+See [Setup a custom proxy service with Cloudflare worker](#setup-a-custom-proxy-service-with-cloudflare-worker).
 
 ### Disable proxy
 
@@ -120,6 +118,65 @@ systemctl --user start everygarf.timer
 ```
 
 > View logs of `everygarf.service` with `journalctl --user --unit everygarf.service --pager-end`
+
+
+# Setup a custom proxy service with Cloudflare worker
+
+Setup a Cloudflare worker with [https://github.com/Zibri/cloudflare-cors-anywhere](Zibri/cloudflare-cors-anywhere), and pass in the url with `--proxy`.
+
+1. [Create a Cloudflare account](https://dash.cloudflare.com/sign-up)
+2. Install [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (Node package manager)
+3. Clone the repository
+
+```sh
+git clone https://github.com/darccyy/cloudflare-cors-anywhere myproxy
+cd myproxy
+npm install
+```
+
+4. Install [wrangler](https://developers.cloudflare.com/workers/wrangler/) (Cloudflare worker CLI)
+
+```sh
+npm install --include=dev
+```
+
+5. Login to wrangler
+
+Log in to your Cloudflare account through the browser.
+
+```sh
+npx wrangler login
+```
+
+Replace `{{ account-id }}` with your Cloudflare account ID, in `wrangler.toml`
+
+```toml
+# ...
+account_id = "{{ account-id }}" 
+# ...
+```
+
+6. Run in development mode
+
+```sh
+npm run dev
+```
+
+7. Deploy to Cloudflare
+
+```sh
+npm run deploy
+```
+
+8. Test the deployment
+
+[https://myproxy.YOURUSERNAME.worker.dev/cors-proxy?https://gocomics.com/garfield/2001/9/10](https://myproxy.YOURUSERNAME.worker.dev/cors-proxy?https://gocomics.com/garfield/2001/9/10)
+
+9. Use proxy with `everygarf`
+
+```sh
+everygarf --proxy "https://myproxy.<YOURUSERNAME>.worker.dev/cors-proxy"
+```
 
 # Disclaimer
 
