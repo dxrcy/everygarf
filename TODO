@@ -7,3 +7,6 @@ add cli options
 overhaul error handling
     use enum, not string
     difference between cloudflare 429 vs other 429?
+
+cache
+    add to readme
