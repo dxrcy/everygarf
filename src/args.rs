@@ -69,7 +69,7 @@ pub struct Args {
     pub cache: String,
 
     /// Do not read remote or local cache file
-    #[arg(long, conflicts_with = "cache_url")]
+    #[arg(long, conflicts_with = "cache")]
     pub no_cache: bool,
 
     /// Save image urls to local cache file
