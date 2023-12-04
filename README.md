@@ -96,7 +96,9 @@ Otherwise, binary path must be changed in `ExecStart` field in `everygarf.servic
 ```sh
 #!/bin/sh
 # 1. Navigate to user systemd config
-cd ~/.config/systemd/user || exit 1
+dir=~/.config/systemd/user
+[ -d "$dir" ] || { mkdir -p "$dir" || exit 1; }
+cd "$dir" || exit 1
 # 2. Create service file
 # ExecStart path must be absolute, $HOME is interpolated on file create
 # Maximum 50 images at a time
