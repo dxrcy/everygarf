@@ -1,9 +1,7 @@
 use chrono::NaiveDate;
 use reqwest::Client;
 
-use crate::colors::*;
 use crate::dates::date_to_string;
-use crate::format_request_error;
 
 pub const PROXY_DEFAULT: &str = "https://proxy.darcy-700.workers.dev/cors-proxy";
 pub const CACHE_DEFAULT: &str =
@@ -22,21 +20,24 @@ fn webpage_unproxied(date: NaiveDate) -> String {
     format!("https://www.gocomics.com/garfield/{}", date_string)
 }
 
-pub async fn check_proxy_service(client: &Client, proxy: &str) -> Result<(), String> {
-    let result = client
-        .get(proxy)
-        .send()
-        .await
-        .and_then(|response| response.error_for_status());
-
-    if let Err(error) = result {
-        let message = format!(
-            "{RED}{BOLD}Proxy service unavailable{RESET} - {}.\n{DIM}Trying to ping {UNDERLINE}{}{RESET}\nPlease try later, or create an issue at https://github.com/darccyy/everygarf/issues/new",
-            proxy,
-            format_request_error(error),
-        );
-        return Err(message);
-    }
-
+pub async fn check_proxy_service(client: &Client, proxy: &str) -> Result<(), reqwest::Error> {
+    client.get(proxy).send().await?.error_for_status()?;
     Ok(())
+}
+
+pub async fn fetch_cached_urls(
+    client: &Client,
+    cache_url: &str,
+) -> Result<Vec<(NaiveDate, String)>, reqwest::Error> {
+    let text = client
+        .get(cache_url)
+        .send()
+        .await?
+        .error_for_status()?
+        .text()
+        .await?;
+
+    println!("{}", text);
+
+    todo!()
 }

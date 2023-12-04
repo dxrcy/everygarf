@@ -50,12 +50,9 @@ async fn main() {
     let existing_dates = everygarf::get_existing_dates(&folder)
         .unwrap_or_else(|error| fatal_error(4, error, notify_fail));
 
-    let _cached_dates = Vec::<DateUrlCached>::new();
-
     let mut missing_dates: Vec<_> = all_dates
         .into_iter()
         .filter(|date| !existing_dates.contains(date))
-        .map(|date| DateUrlCached { date, url: None })
         .collect();
 
     let total_download_count = missing_dates.len();
@@ -76,6 +73,11 @@ async fn main() {
     } else {
         Some(args.proxy)
     };
+    let cache_url = if args.no_cache {
+        None
+    } else {
+        Some(args.cache_url)
+    };
 
     if real_download_count > 0 {
         println!(
@@ -91,6 +93,7 @@ async fn main() {
             request_timeout,
             notify_fail,
             proxy,
+            cache_url,
         )
         .await;
     }
