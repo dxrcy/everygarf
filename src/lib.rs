@@ -45,6 +45,7 @@ pub async fn download_all_images(
 
     let proxy = proxy.as_deref();
     if let Some(proxy) = proxy {
+        println!("    {DIM}Pinging proxy server...{RESET}");
         if let Err(error) = proxy::check_proxy_service(&client, proxy).await {
             let message = format!(
                 "{RED}{BOLD}Proxy service unavailable{RESET} - {}.\n{DIM}Trying to ping {UNDERLINE}{}{RESET}\nPlease try later, or create an issue at https://github.com/darccyy/everygarf/issues/new",
@@ -57,6 +58,7 @@ pub async fn download_all_images(
 
     let dates_cached: Vec<_> = match cache_url {
         Some(cache_url) => {
+            println!("    {DIM}Downloading cached urls...{RESET}");
             let cached_dates = match cache::fetch_cached_urls(&client, &cache_url).await {
                 Ok(dates) => dates,
                 Err(error) => {
