@@ -11,9 +11,10 @@ use everygarf::{colors::*, dates, fatal_error, get_folder_path};
 #[tokio::main]
 async fn main() {
     let args = Args::parse();
-    println!(" {BOLD}┌─────────────┐{RESET}");
-    println!(" {BOLD}│  EveryGarf  │{RESET}");
-    println!(" {BOLD}└─────────────┘{RESET} {ITALIC}Comic Downloader{RESET}");
+    print!("{BOLD}");
+    println!(" ┌─────────────┐");
+    println!(" │  EveryGarf  │");
+    println!(" └─────────────┘{RESET} {ITALIC}Comic Downloader{RESET}");
 
     let start_time = Instant::now();
     let notify_fail = args.notify_fail;
