@@ -1,13 +1,12 @@
 mod args;
 
 use clap::Parser;
-use everygarf::{fatal_error, get_folder_path, DateUrlCached};
 use human_bytes::human_bytes;
 use humantime::format_duration;
 use std::time::{Duration, Instant};
 
 use crate::args::Args;
-use everygarf::{colors::*, dates};
+use everygarf::{colors::*, dates, fatal_error, get_folder_path};
 
 #[tokio::main]
 async fn main() {
@@ -73,11 +72,12 @@ async fn main() {
     } else {
         Some(args.proxy)
     };
-    let cache_url = if args.no_cache {
+    let cache_url = if args.no_cache || args.save_cache.is_some() {
         None
     } else {
         Some(args.cache_url)
     };
+    let cache_file = args.save_cache;
 
     if real_download_count > 0 {
         println!(
@@ -94,6 +94,7 @@ async fn main() {
             notify_fail,
             proxy,
             cache_url,
+            cache_file,
         )
         .await;
     }

@@ -35,6 +35,7 @@ pub async fn download_all_images(
     notify_fail: bool,
     proxy: Option<String>,
     cache_url: Option<String>,
+    cache_file: Option<String>,
 ) {
     let client = Client::builder()
         .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36")
@@ -56,18 +57,24 @@ pub async fn download_all_images(
 
     let dates_cached: Vec<_> = match cache_url {
         Some(cache_url) => {
-            let _cached_dates = match url::fetch_cached_urls(&client, &cache_url).await {
+            let cached_dates = match url::fetch_cached_urls(&client, &cache_url).await {
                 Ok(dates) => dates,
                 Err(error) => {
                     let message = format!(
                         "{RED}{BOLD}Cache download unavailable{RESET} - {}.\n{DIM}Trying to fetch {UNDERLINE}{}{RESET}\nPlease try later, run with `--no-cache` argument, or create an issue at https://github.com/darccyy/everygarf/issues/new",
                         cache_url,
-                        format_request_error(error),
+                        error,
                     );
                     fatal_error(5, message, notify_fail)
                 }
             };
-            todo!();
+            dates
+                .into_iter()
+                .map(|date| DateUrlCached {
+                    date: *date,
+                    url: cached_dates.get(date).cloned(),
+                })
+                .collect()
         }
         None => dates
             .into_iter()
@@ -77,6 +84,7 @@ pub async fn download_all_images(
             })
             .collect(),
     };
+    let cache_file = cache_file.as_deref();
 
     let bodies = stream::iter(dates_cached.iter().enumerate())
         .map(|(i, date_cached)| {
@@ -90,6 +98,7 @@ pub async fn download_all_images(
                     job_id,
                     attempt_count,
                     proxy,
+                    cache_file,
                 )
                 .await
             }

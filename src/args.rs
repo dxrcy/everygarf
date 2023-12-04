@@ -65,9 +65,9 @@ pub struct Args {
     #[arg(long, short, conflicts_with = "no_cache", default_value = everygarf::url::CACHE_DEFAULT)]
     pub cache_url: String,
 
-    #[arg(long, conflicts_with = "no_cache")]
-    pub save_cache: bool,
-
-    #[arg(long, conflicts_with = "cache_url", conflicts_with = "save_cache")]
+    #[arg(long, conflicts_with = "cache_url")]
     pub no_cache: bool,
+
+    #[arg(long, conflicts_with = "cache_url", conflicts_with = "no_cache")]
+    pub save_cache: Option<String>,
 }
