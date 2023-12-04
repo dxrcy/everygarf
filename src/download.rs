@@ -23,7 +23,7 @@ fn print_step(date: NaiveDate, job_id: usize, step: u32, skip: bool) {
         "•".repeat(3 - step.min(3) as usize),
     );
     println!(
-        "    {BOLD}{date}{RESET}  {DIM}#{job_id:02}{RESET}  {BLUE}{skip}[{step}{BLUE}{skip}]{RESET} {GREEN}{icon}{RESET}"
+        "    {BOLD}{date}{RESET}  {DIM}#{job_id:02}{RESET}  {BLUE}{skip}[{step}{BLUE}{skip}]{RESET}  {GREEN}{icon}{RESET}"
     );
 }
 
