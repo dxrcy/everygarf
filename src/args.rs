@@ -75,6 +75,8 @@ pub struct Args {
     /// Save image urls to local cache file
     ///
     /// Use cache file with `--cache <FILE>`
+    ///
+    /// Without `--no-cache`, this reuses the existing cached URLs
     #[arg(long)]
     pub save_cache: Option<String>,
 }
