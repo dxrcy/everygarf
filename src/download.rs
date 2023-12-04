@@ -2,8 +2,9 @@ use bytes::Bytes;
 use chrono::NaiveDate;
 use image::DynamicImage;
 use reqwest::Client;
-use std::{fs, io::Write, path::Path};
+use std::path::Path;
 
+use crate::cache;
 use crate::colors::*;
 use crate::dates::date_to_string;
 use crate::format_request_error;
@@ -85,7 +86,7 @@ async fn fetch_image(
     };
 
     if let Some(cache_file) = cache_file {
-        append_cache_file(date_cached.date, &image_url, cache_file)?;
+        cache::append_cache_file(date_cached.date, &image_url, cache_file)?;
     }
 
     print_step(date_cached.date, job_id, 2);
@@ -98,19 +99,6 @@ async fn fetch_image(
         .map_err(|error| format!("Parsing image - {}", error))?;
 
     Ok(image)
-}
-
-fn append_cache_file(date: NaiveDate, image_url: &str, cache_file: &str) -> Result<(), String> {
-    let mut file = fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(cache_file)
-        .map_err(|error| format!("Opening cache file - {}", error))?;
-
-    writeln!(file, "{} {}", date, image_url)
-        .map_err(|error| format!("Writing to cache file - {}", error))?;
-
-    Ok(())
 }
 
 async fn fetch_image_url_from_date(

@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::fs;
+use std::{fs, io::Write};
 
 use chrono::NaiveDate;
 use futures::{io, TryFutureExt};
@@ -43,7 +43,7 @@ fn parse_cached_urls(file: &str) -> Result<DateMap, ()> {
     for line in file.lines() {
         let (date_string, url) = split_first_word(line).ok_or(())?;
         let date = date_from_filename(date_string.trim()).ok_or(())?;
-        let url = url.trim().to_string();
+        let url = expand_image_url(url.trim());
         rows.insert(date, url);
     }
     Ok(rows)
@@ -62,6 +62,31 @@ async fn fetch_text(client: &Client, url: &str) -> Result<String, reqwest::Error
         .error_for_status()?
         .text()
         .await
+}
+
+pub fn append_cache_file(date: NaiveDate, image_url: &str, cache_file: &str) -> Result<(), String> {
+    let mut file = fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(cache_file)
+        .map_err(|error| format!("Opening cache file - {}", error))?;
+
+    writeln!(file, "{} {}", date, minify_image_url(image_url))
+        .map_err(|error| format!("Writing to cache file - {}", error))?;
+
+    Ok(())
+}
+
+const IMAGE_URL_BASE: &str = "https://assets.amuniversal.com/";
+
+fn minify_image_url(url: &str) -> &str {
+    url.strip_prefix(IMAGE_URL_BASE).unwrap_or(url)
+}
+fn expand_image_url(minified: &str) -> String {
+    if minified.starts_with(IMAGE_URL_BASE) {
+        return minified.to_string();
+    }
+    IMAGE_URL_BASE.to_string() + minified
 }
 
 pub fn clean_cache_file(cache_file: &str) -> io::Result<()> {
