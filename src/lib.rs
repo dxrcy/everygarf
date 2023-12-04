@@ -3,32 +3,27 @@ pub mod colors;
 pub mod dates;
 mod download;
 mod io;
-pub mod url;
+pub mod proxy;
 
 use chrono::NaiveDate;
 use futures::{stream, StreamExt};
 use reqwest::{Client, StatusCode};
 use std::{path::Path, process, time::Duration};
 
+use crate::cache::DateUrlCached;
 use crate::colors::*;
 use crate::dates::date_from_filename;
 pub use crate::io::{create_target_dir, get_folder_path};
 
 pub const PROXY_DEFAULT: &str = "https://proxy.darcy-700.workers.dev/cors-proxy";
 pub const CACHE_DEFAULT: &str =
-    "https://raw.githubusercontent.com/darccyy/everygarf-cache/master/everygarf.cache";
+    "https://raw.githubusercontent.com/darccyy/everygarf-cache/master/cache";
 
 pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {
     Ok(crate::io::get_child_filenames(folder)
         .map_err(|err| format!("read directory - {:#?}", err))?
         .filter_map(|filename| date_from_filename(filename.to_str()?))
         .collect())
-}
-
-#[derive(Clone)]
-pub struct DateUrlCached {
-    pub date: NaiveDate,
-    pub url: Option<String>,
 }
 
 pub async fn download_all_images(
@@ -50,7 +45,7 @@ pub async fn download_all_images(
 
     let proxy = proxy.as_deref();
     if let Some(proxy) = proxy {
-        if let Err(error) = url::check_proxy_service(&client, proxy).await {
+        if let Err(error) = proxy::check_proxy_service(&client, proxy).await {
             let message = format!(
                 "{RED}{BOLD}Proxy service unavailable{RESET} - {}.\n{DIM}Trying to ping {UNDERLINE}{}{RESET}\nPlease try later, or create an issue at https://github.com/darccyy/everygarf/issues/new",
                 proxy,

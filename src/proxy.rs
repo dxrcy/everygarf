@@ -1,6 +1,7 @@
-use crate::dates::date_to_string;
 use chrono::NaiveDate;
 use reqwest::Client;
+
+use crate::dates::date_to_string;
 
 pub fn webpage_proxied(date: NaiveDate, proxy: Option<&str>) -> String {
     let url = webpage_unproxied(date);

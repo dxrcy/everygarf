@@ -1,8 +1,6 @@
-use std::{
-    ffi::OsString,
-    fs, io,
-    path::{Path, PathBuf},
-};
+use std::ffi::OsString;
+use std::path::{Path, PathBuf};
+use std::{fs, io};
 
 pub fn get_folder_path(folder: Option<&str>) -> Result<PathBuf, String> {
     let folder = folder.map(|folder| Path::new(&folder).to_path_buf());

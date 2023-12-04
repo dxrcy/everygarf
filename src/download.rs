@@ -2,14 +2,12 @@ use bytes::Bytes;
 use chrono::NaiveDate;
 use image::DynamicImage;
 use reqwest::Client;
-use std::fs;
-use std::io::Write;
-use std::path::Path;
+use std::{fs, io::Write, path::Path};
 
 use crate::colors::*;
 use crate::dates::date_to_string;
 use crate::format_request_error;
-use crate::url;
+use crate::proxy;
 use crate::DateUrlCached;
 
 fn print_step(date: NaiveDate, job_id: usize, step: u32, skip: bool) {
@@ -123,7 +121,7 @@ async fn fetch_image_url_from_date(
     date: NaiveDate,
     proxy: Option<&str>,
 ) -> Result<String, String> {
-    let url = url::webpage_proxied(date, proxy);
+    let url = proxy::webpage_proxied(date, proxy);
 
     let response = client
         .get(&url)

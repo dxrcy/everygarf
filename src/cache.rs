@@ -9,6 +9,12 @@ use crate::colors::*;
 use crate::dates::date_from_filename;
 use crate::format_request_error;
 
+#[derive(Clone)]
+pub struct DateUrlCached {
+    pub date: NaiveDate,
+    pub url: Option<String>,
+}
+
 type DateMap = HashMap<NaiveDate, String>;
 
 pub async fn fetch_cached_urls(client: &Client, cache_url: &str) -> Result<DateMap, String> {
