@@ -62,12 +62,19 @@ pub struct Args {
     #[arg(long, conflicts_with = "proxy")]
     pub no_proxy: bool,
 
+    /// Specify cache file to read from
+    ///
+    /// Disable cache with `no-cache`
     #[arg(long, short, conflicts_with = "no_cache", default_value = everygarf::CACHE_DEFAULT)]
-    pub cache_url: String,
+    pub cache: String,
 
+    /// Do not read remote or local cache file
     #[arg(long, conflicts_with = "cache_url")]
     pub no_cache: bool,
 
-    #[arg(long, conflicts_with = "no_cache")]
+    /// Save image urls to local cache file
+    ///
+    /// Use cache file with `--cache <FILE>`
+    #[arg(long)]
     pub save_cache: Option<String>,
 }

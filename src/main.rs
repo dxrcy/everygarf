@@ -75,7 +75,7 @@ async fn main() {
     let cache_url = if args.no_cache {
         None
     } else {
-        Some(args.cache_url)
+        Some(args.cache)
     };
     let cache_file = args.save_cache;
 
