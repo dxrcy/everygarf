@@ -129,16 +129,16 @@ async fn fetch_image_url_from_date(
         .map_err(format_request_error)?;
 
     let response_body = response.text().await.map_err(|error| {
-        format!("Converting webpage body for image url to text ({url}) - {error}")
+        format!("Converting webpage body for image URL to text ({url}) - {error}")
     })?;
 
     let Some(char_index) = response_body.find("https://assets.amuniversal.com") else {
-        return Err(format!("Cannot find image url in webpage body ({url})"));
+        return Err(format!("Cannot find image URL in webpage body ({url})"));
     };
 
     let Some(image_url) = response_body.get(char_index..char_index + 63) else {
         return Err(format!(
-            "Slicing text of webpage body for image url ({url})"
+            "Slicing text of webpage body for image URL ({url})"
         ));
     };
 

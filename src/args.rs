@@ -72,7 +72,7 @@ pub struct Args {
     #[arg(long, conflicts_with = "cache")]
     pub no_cache: bool,
 
-    /// Save image urls to local cache file
+    /// Save image URLs to local cache file
     ///
     /// Use cache file with `--cache <FILE>`
     ///

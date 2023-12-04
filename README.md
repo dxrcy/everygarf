@@ -58,7 +58,7 @@ Per some basic testing, increasing concurrency seems to have diminishing returns
 Since an official Garfield comic API could not be found, this program scrapes [gocomics.com](https://www.gocomics.com/garfield/1978/6/19), and finds the [assets.amuniversal.com](https://assets.amuniversal.com/aead3a905f69012ee3c100163e41dd5b) link.
 This requires 2 HTTP requests per comic.
 The files hosted at [picayune.uclick.com](https://picayune.uclick.com/comics/ga/1978/ga780619.gif), while only requiring 1 request each, have been found to be very inconsistent and unstable, therefore are not used.
-See [Cached image urls](#cached-image-urls).
+See [Cached image URLs](#cached-image-urls).
 
 ## Possible speed optimizations
 
@@ -68,8 +68,8 @@ The only forseeable optimization to this program would be using a different web 
 
 ## Proxy service
 
-Default proxy url is `https://proxy.darcy-700.workers.dev`, a simple Cloudflare worker.
-If you are continually seeing 'rate limited' (HTTP/429) error, try changing the proxy url (below).
+Default proxy URL is `https://proxy.darcy-700.workers.dev`, a simple Cloudflare worker.
+If you are continually seeing 'rate limited' (HTTP/429) error, try changing the proxy URL (below).
 
 ### Custom proxy service
 
@@ -80,10 +80,10 @@ See [Setup a custom proxy service with Cloudflare worker](#setup-a-custom-proxy-
 Use `--no-proxy` argument.
 This is not recommended, you will most likely get immediately rate limited by [gocomics.com](https://www.gocomics.com/garfield/1978/6/19).
 
-## Cached image urls
+## Cached image URLs
 
-Without image url caching, each image would require 2 requests (see [API](#api)).
-By default, it checks for existing cached image urls by fetching [darccyy/everygarf-cache](https://github.com/darccyy/everygarf-cache).
+Without image URL caching, each image would require 2 requests (see [API](#api)).
+By default, it checks for existing cached image URLs by fetching [darccyy/everygarf-cache](https://github.com/darccyy/everygarf-cache).
 Disable with `--no-cache`, use a custom cache file URL (remote or local) with `--cache`, save your own cache file with `--save-cache`.
 
 # Automatically Running with Systemd Timer
@@ -134,7 +134,7 @@ systemctl --user start everygarf.timer
 
 > This has not been tested very well! It works on my machine, but if you have any problems, please [open an issue](https://github.com/darccyy/everygarf/issues/new)
 
-Setup a Cloudflare worker with [Zibri/cloudflare-cors-anywhere](https://github.com/darccyy/cloudflare-cors-anywhere), and pass in the url with `--proxy`.
+Setup a Cloudflare worker with [Zibri/cloudflare-cors-anywhere](https://github.com/darccyy/cloudflare-cors-anywhere), and pass in the URL with `--proxy`.
 
 1. [Create a Cloudflare account](https://dash.cloudflare.com/sign-up)
 2. Install [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (Node package manager)
