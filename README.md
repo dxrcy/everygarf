@@ -16,11 +16,10 @@ Concurrently download every Garfield comic to date.
 
 ## Cargo (from source)
 
-Install from source with `cargo`.
-Eventually I will put this on [crates.io](https://crates.io)
+Install from [Crates.io](https://crates.io/crates/everygarf) with [Cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html).
 
 ```sh
-cargo install --git https://github.com/darccyy/everygarf
+cargo install everygarf
 ```
 
 Or clone repository, and install with `cargo`.
