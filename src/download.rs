@@ -10,9 +10,9 @@ use crate::format_request_error;
 use crate::proxy;
 use crate::DateUrlCached;
 
-fn print_step(date: NaiveDate, job_id: usize, step: u32, skip: bool) {
-    let skip = if skip {
-        format!("{CYAN}{BOLD}")
+fn print_step(date: NaiveDate, job_id: usize, step: u32) {
+    let alt = if step < 2 {
+        format!("{CYAN}")
     } else {
         String::new()
     };
@@ -23,7 +23,7 @@ fn print_step(date: NaiveDate, job_id: usize, step: u32, skip: bool) {
         "•".repeat(3 - step.min(3) as usize),
     );
     println!(
-        "    {BOLD}{date}{RESET}  {DIM}#{job_id:02}{RESET}  {BLUE}{skip}[{step}{BLUE}{skip}]{RESET}  {GREEN}{icon}{RESET}"
+        "    {BOLD}{date}{RESET}  {DIM}#{job_id:02}{RESET}  {BLUE}{alt}[{step}{BLUE}{alt}]{RESET}  {GREEN}{icon}{RESET}"
     );
 }
 
@@ -77,7 +77,7 @@ async fn fetch_image(
     let image_url = match &date_cached.url {
         Some(url) => url.to_owned(),
         None => {
-            print_step(date_cached.date, job_id, 1, false);
+            print_step(date_cached.date, job_id, 1);
             fetch_image_url_from_date(client, date_cached.date, proxy)
                 .await
                 .map_err(|error| format!("Fetching image url - {}", error))?
@@ -88,12 +88,12 @@ async fn fetch_image(
         append_cache_file(date_cached.date, &image_url, cache_file)?;
     }
 
-    print_step(date_cached.date, job_id, 2, date_cached.url.is_some());
+    print_step(date_cached.date, job_id, 2);
     let image_bytes = fetch_image_bytes_from_url(client, &image_url)
         .await
         .map_err(|error| format!("Fetching image bytes - {}", error))?;
 
-    print_step(date_cached.date, job_id, 3, false);
+    print_step(date_cached.date, job_id, 3);
     let image = image::load_from_memory(&image_bytes)
         .map_err(|error| format!("Parsing image - {}", error))?;
 
