@@ -58,7 +58,7 @@ pub async fn download_all_images(
 
     let dates_cached: Vec<_> = match cache_url {
         Some(cache_url) => {
-            println!("    {DIM}Downloading cached urls...{RESET}");
+            println!("    {DIM}Downloading cached URLs...{RESET}");
             let cached_dates = match cache::fetch_cached_urls(&client, &cache_url).await {
                 Ok(dates) => dates,
                 Err(error) => {
