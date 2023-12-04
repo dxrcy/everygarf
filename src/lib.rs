@@ -64,14 +64,7 @@ pub async fn download_all_images(
         Some(cache_url) => {
             let cached_dates = match cache::fetch_cached_urls(&client, &cache_url).await {
                 Ok(dates) => dates,
-                Err(error) => {
-                    let message = format!(
-                        "{RED}{BOLD}Cache download unavailable{RESET} - {}.\n{DIM}Trying to fetch {UNDERLINE}{}{RESET}\nPlease try later, run with `--no-cache` argument, or create an issue at https://github.com/darccyy/everygarf/issues/new",
-                        cache_url,
-                        error,
-                    );
-                    fatal_error(5, message, notify_fail)
-                }
+                Err(error) => fatal_error(5, error, notify_fail),
             };
             dates
                 .into_iter()
