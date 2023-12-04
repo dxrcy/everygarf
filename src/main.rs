@@ -72,7 +72,7 @@ async fn main() {
     } else {
         Some(args.proxy)
     };
-    let cache_url = if args.no_cache || args.save_cache.is_some() {
+    let cache_url = if args.no_cache {
         None
     } else {
         Some(args.cache_url)

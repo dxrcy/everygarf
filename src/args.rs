@@ -53,7 +53,7 @@ pub struct Args {
     /// Url of custom proxy service
     ///
     /// See [https://github.com/darccyy/everygarf#proxy-service] for more information
-    #[arg(long, conflicts_with = "no_proxy", default_value = everygarf::url::PROXY_DEFAULT)]
+    #[arg(long, conflicts_with = "no_proxy", default_value = everygarf::PROXY_DEFAULT)]
     pub proxy: String,
 
     /// Do not use a proxy service (not recommended)
@@ -62,12 +62,12 @@ pub struct Args {
     #[arg(long, conflicts_with = "proxy")]
     pub no_proxy: bool,
 
-    #[arg(long, short, conflicts_with = "no_cache", default_value = everygarf::url::CACHE_DEFAULT)]
+    #[arg(long, short, conflicts_with = "no_cache", default_value = everygarf::CACHE_DEFAULT)]
     pub cache_url: String,
 
     #[arg(long, conflicts_with = "cache_url")]
     pub no_cache: bool,
 
-    #[arg(long, conflicts_with = "cache_url", conflicts_with = "no_cache")]
+    #[arg(long, conflicts_with = "no_cache")]
     pub save_cache: Option<String>,
 }

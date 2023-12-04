@@ -73,7 +73,10 @@ async fn fetch_image(
 ) -> Result<DynamicImage, String> {
     print_step(date_cached.date, job_id, 1);
     let image_url = match &date_cached.url {
-        Some(url) => url.to_owned(),
+        Some(url) => {
+            println!("CACHED {}", url);
+            url.to_owned()
+        }
         None => fetch_image_url_from_date(client, date_cached.date, proxy)
             .await
             .map_err(|error| format!("Fetching image url - {}", error))?,

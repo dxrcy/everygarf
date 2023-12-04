@@ -1,3 +1,4 @@
+mod cache;
 pub mod colors;
 pub mod dates;
 mod download;
@@ -12,6 +13,10 @@ use std::{path::Path, process, time::Duration};
 use crate::colors::*;
 use crate::dates::date_from_filename;
 pub use crate::io::{create_target_dir, get_folder_path};
+
+pub const PROXY_DEFAULT: &str = "https://proxy.darcy-700.workers.dev/cors-proxy";
+pub const CACHE_DEFAULT: &str =
+    "https://raw.githubusercontent.com/darccyy/everygarf-cache/master/everygarf.cache";
 
 pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {
     Ok(crate::io::get_child_filenames(folder)
@@ -57,7 +62,7 @@ pub async fn download_all_images(
 
     let dates_cached: Vec<_> = match cache_url {
         Some(cache_url) => {
-            let cached_dates = match url::fetch_cached_urls(&client, &cache_url).await {
+            let cached_dates = match cache::fetch_cached_urls(&client, &cache_url).await {
                 Ok(dates) => dates,
                 Err(error) => {
                     let message = format!(
@@ -112,6 +117,16 @@ pub async fn download_all_images(
             }
         })
         .await;
+
+    if let Some(cache_file) = cache_file {
+        if let Err(error) = cache::clean_cache_file(&cache_file) {
+            fatal_error(
+                6,
+                format!("Failed to clean cache file - {}", error),
+                notify_fail,
+            );
+        }
+    }
 }
 
 pub fn fatal_error(code: u8, message: String, notify: bool) -> ! {
