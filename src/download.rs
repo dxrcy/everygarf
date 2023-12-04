@@ -12,7 +12,7 @@ use crate::DateUrlCached;
 
 fn print_step(date: NaiveDate, job_id: usize, step: u32, skip: bool) {
     let skip = if skip {
-        format!("{MAGENTA}{DIM}")
+        format!("{CYAN}{BOLD}")
     } else {
         String::new()
     };
@@ -75,10 +75,7 @@ async fn fetch_image(
     cache_file: Option<&str>,
 ) -> Result<DynamicImage, String> {
     let image_url = match &date_cached.url {
-        Some(url) => {
-            print_step(date_cached.date, job_id, 1, true);
-            url.to_owned()
-        }
+        Some(url) => url.to_owned(),
         None => {
             print_step(date_cached.date, job_id, 1, false);
             fetch_image_url_from_date(client, date_cached.date, proxy)
@@ -91,7 +88,7 @@ async fn fetch_image(
         append_cache_file(date_cached.date, &image_url, cache_file)?;
     }
 
-    print_step(date_cached.date, job_id, 2, false);
+    print_step(date_cached.date, job_id, 2, date_cached.url.is_some());
     let image_bytes = fetch_image_bytes_from_url(client, &image_url)
         .await
         .map_err(|error| format!("Fetching image bytes - {}", error))?;
