@@ -682,7 +682,7 @@ dependencies = [
 
 [[package]]
 name = "everygarf"
-version = "2.3.1"
+version = "2.3.2"
 dependencies = [
  "bytes",
  "chrono",

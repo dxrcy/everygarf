@@ -87,10 +87,17 @@ pub async fn download_all_images(
     };
     let cache_file = cache_file.as_deref();
 
+    let min_count_for_progress = job_count * 20;
+
     let bodies = stream::iter(dates_cached.iter().enumerate())
         .map(|(i, date_cached)| {
             let job_id = i % job_count;
             let client = &client;
+            let progress = if dates_cached.len() >= min_count_for_progress {
+                Some(i * 100 / dates_cached.len())
+            } else {
+                None
+            };
             async move {
                 download::download_image(
                     client,
@@ -98,6 +105,7 @@ pub async fn download_all_images(
                     folder,
                     job_id,
                     attempt_count,
+                    progress,
                     proxy,
                     cache_file,
                 )
