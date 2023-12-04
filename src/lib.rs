@@ -64,7 +64,13 @@ pub async fn download_all_images(
         Some(cache_url) => {
             let cached_dates = match cache::fetch_cached_urls(&client, &cache_url).await {
                 Ok(dates) => dates,
-                Err(error) => fatal_error(5, error, notify_fail),
+                Err(error) => {
+                    let message = format!(
+                        "{}\n{RESET}{DIM}Please try running with `--no-cache` argument, or create an issue at https://github.com/darccyy/everygarf/issues/new{RESET}",
+                        error,
+                    );
+                    fatal_error(5, message, notify_fail)
+                }
             };
             dates
                 .into_iter()

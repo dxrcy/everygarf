@@ -16,7 +16,7 @@ pub async fn fetch_cached_urls(client: &Client, cache_url: &str) -> Result<DateM
         fetch_text(client, cache_url)
             .map_err(|error|
                 format!(
-                    "{RED}{BOLD}Remote cache download unavailable{RESET} - {}.\n{DIM}Trying to fetch {UNDERLINE}{}{RESET}\nPlease try later, run with `--no-cache` argument, or create an issue at https://github.com/darccyy/everygarf/issues/new",
+                    "{RED}{BOLD}Remote cache download unavailable{RESET} - {}.\n{DIM}Trying to fetch {UNDERLINE}{}{RESET}",
                     cache_url,
                   format_request_error(  error),
                 ))
