@@ -50,7 +50,7 @@ Download time was tested a few times (since v2.0), with varying values for `--jo
 Speed is obviously very dependent on your ping and download speed.
 Per some basic testing, increasing concurrency seems to have diminishing returns past `--jobs 20`.
 
-![Graph of download speed to job count, with trend line showing rapid falloff from range 1-20, then settling on a similar rate from range 20-100](./image/download-speed-graph.png)
+![Graph of download speed to job count, with trend line showing exponential decay from range 1-20, then settling on a similar rate from range 20-100](./image/download-speed-graph.png)
 
 ## API
 
