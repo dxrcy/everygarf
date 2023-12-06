@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fs::File;
 use std::{fs, io::Write};
 
 use chrono::NaiveDate;
@@ -41,6 +42,10 @@ fn is_remote_url(url: &str) -> bool {
 fn parse_cached_urls(file: &str) -> Result<DateMap, ()> {
     let mut rows = HashMap::new();
     for line in file.lines() {
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
         let (date_string, url) = split_first_word(line).ok_or(())?;
         let date = date_from_filename(date_string.trim()).ok_or(())?;
         let url = expand_image_url(url.trim());
@@ -64,16 +69,24 @@ async fn fetch_text(client: &Client, url: &str) -> Result<String, reqwest::Error
         .await
 }
 
-pub fn append_cache_file(date: NaiveDate, image_url: &str, cache_file: &str) -> Result<(), String> {
-    let mut file = fs::OpenOptions::new()
+fn open_cache_file_to_append(cache_file: &str) -> Result<File, String> {
+    fs::OpenOptions::new()
         .create(true)
         .append(true)
         .open(cache_file)
-        .map_err(|error| format!("Opening cache file - {}", error))?;
+        .map_err(|error| format!("Opening cache file - {}", error))
+}
 
+pub fn append_cache_file_newline(cache_file: &str) -> Result<(), String> {
+    let mut file = open_cache_file_to_append(cache_file)?;
+    writeln!(file, "\n").map_err(|error| format!("Writing newline to cache file - {}", error))?;
+    Ok(())
+}
+
+pub fn append_cache_file(date: NaiveDate, image_url: &str, cache_file: &str) -> Result<(), String> {
+    let mut file = open_cache_file_to_append(cache_file)?;
     writeln!(file, "{} {}", date, minify_image_url(image_url))
         .map_err(|error| format!("Writing to cache file - {}", error))?;
-
     Ok(())
 }
 

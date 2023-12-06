@@ -87,6 +87,12 @@ pub async fn download_all_images(
     };
     let cache_file = cache_file.as_deref();
 
+    if let Some(cache_file) = cache_file {
+        if let Err(error) = cache::append_cache_file_newline(cache_file) {
+            fatal_error(1, format!("{}", error), notify_fail);
+        }
+    }
+
     let min_count_for_progress = job_count * 20;
 
     let bodies = stream::iter(dates_cached.iter().enumerate())
