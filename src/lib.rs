@@ -19,6 +19,8 @@ pub const PROXY_DEFAULT: &str = "https://proxy.darcy-700.workers.dev/cors-proxy"
 pub const CACHE_DEFAULT: &str =
     "https://raw.githubusercontent.com/darccyy/everygarf-cache/master/cache";
 
+static mut PROGRESS_COUNT: u32 = 0;
+
 pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {
     Ok(crate::io::get_child_filenames(folder)
         .map_err(|err| format!("read directory - {:#?}", err))?
@@ -93,17 +95,13 @@ pub async fn download_all_images(
         }
     }
 
-    let min_count_for_progress = job_count * 20;
+    unsafe { PROGRESS_COUNT = 0 }
 
     let bodies = stream::iter(dates_cached.iter().enumerate())
         .map(|(i, date_cached)| {
             let job_id = i % job_count;
             let client = &client;
-            let progress = if dates_cached.len() >= min_count_for_progress {
-                Some(i * 100 / dates_cached.len())
-            } else {
-                None
-            };
+            let progress = dates_cached.len();
             async move {
                 download::download_image(
                     client,

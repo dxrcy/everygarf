@@ -10,16 +10,13 @@ use crate::dates::date_to_string;
 use crate::format_request_error;
 use crate::proxy;
 use crate::DateUrlCached;
+use crate::PROGRESS_COUNT;
 
-fn print_step(date: NaiveDate, job_id: usize, step: u32, progress: Option<usize>) {
+fn print_step(date: NaiveDate, job_id: usize, step: u32, total_count: usize) {
     let alt = if step < 2 {
         format!("{CYAN}")
     } else {
         String::new()
-    };
-    let progress = match progress {
-        Some(progress) => format!("  {CYAN}{progress:-2}%{RESET}"),
-        None => String::new(),
     };
     let icon = if step == 3 { "✓" } else { " " };
     let step = format!(
@@ -27,8 +24,10 @@ fn print_step(date: NaiveDate, job_id: usize, step: u32, progress: Option<usize>
         " ".repeat(step.max(1) as usize - 1),
         "•".repeat(3 - step.min(3) as usize),
     );
+    let progress = unsafe { PROGRESS_COUNT } as usize * 100 / total_count;
+
     println!(
-        "    {BOLD}{date}{RESET}  {DIM}#{job_id:02}{RESET}{progress}  {BLUE}{alt}[{step}{BLUE}{alt}]{RESET}  {GREEN}{icon}{RESET}"
+        "    {BOLD}{date}{RESET}  {DIM}#{job_id:02}{RESET}  {CYAN}{progress:-2}%{RESET}  {BLUE}{alt}[{step}{BLUE}{alt}]{RESET}  {GREEN}{icon}{RESET}"
     );
 }
 
@@ -38,7 +37,7 @@ pub async fn download_image(
     folder: &Path,
     job_id: usize,
     attempt_count: u32,
-    progress: Option<usize>,
+    total_count: usize,
     proxy: Option<&str>,
     cache_file: Option<&str>,
 ) -> Result<(), String> {
@@ -47,7 +46,8 @@ pub async fn download_image(
     let filepath = folder.join(filename);
 
     for attempt_no in 1..=attempt_count {
-        let result = fetch_image(client, &date_cached, job_id, progress, proxy, cache_file).await;
+        let result =
+            fetch_image(client, &date_cached, job_id, total_count, proxy, cache_file).await;
         match result {
             Ok(image) => {
                 if let Err(error) = image.save(filepath) {
@@ -56,6 +56,7 @@ pub async fn download_image(
                         date_cached.date,
                     ));
                 }
+                unsafe { PROGRESS_COUNT += 1 }
                 break;
             }
             Err(error) => {
@@ -77,14 +78,14 @@ async fn fetch_image(
     client: &Client,
     date_cached: &DateUrlCached,
     job_id: usize,
-    progress: Option<usize>,
+    total_count: usize,
     proxy: Option<&str>,
     cache_file: Option<&str>,
 ) -> Result<DynamicImage, String> {
     let image_url = match &date_cached.url {
         Some(url) => url.to_owned(),
         None => {
-            print_step(date_cached.date, job_id, 1, progress);
+            print_step(date_cached.date, job_id, 1, total_count);
             fetch_image_url_from_date(client, date_cached.date, proxy)
                 .await
                 .map_err(|error| format!("Fetching image url - {}", error))?
@@ -95,12 +96,12 @@ async fn fetch_image(
         cache::append_cache_file(date_cached.date, &image_url, cache_file)?;
     }
 
-    print_step(date_cached.date, job_id, 2, progress);
+    print_step(date_cached.date, job_id, 2, total_count);
     let image_bytes = fetch_image_bytes_from_url(client, &image_url)
         .await
         .map_err(|error| format!("Fetching image bytes - {}", error))?;
 
-    print_step(date_cached.date, job_id, 3, progress);
+    print_step(date_cached.date, job_id, 3, total_count);
     let image = image::load_from_memory(&image_bytes)
         .map_err(|error| format!("Parsing image - {}", error))?;
 
