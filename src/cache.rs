@@ -32,7 +32,7 @@ pub async fn fetch_cached_urls(client: &Client, cache_url: &str) -> Result<DateM
         fs::read_to_string(cache_url)
             .map_err(|error| format!("Reading local cache file - {}", error))?
     };
-    parse_cached_urls(&text).map_err(|_error| format!("Failed to parse cache file"))
+    parse_cached_urls(&text).map_err(|_error| "Failed to parse cache file".to_string())
 }
 
 fn is_remote_url(url: &str) -> bool {
@@ -118,7 +118,7 @@ pub fn clean_cache_file(cache_file: &str) -> io::Result<()> {
             continue;
         }
         unique_rows.push(row);
-        seen_dates.push(&date);
+        seen_dates.push(date);
     }
 
     // sort by date (alphabetically)

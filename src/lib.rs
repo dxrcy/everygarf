@@ -28,25 +28,33 @@ pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {
         .collect())
 }
 
-pub async fn download_all_images(
+#[derive(Clone, Copy)]
+pub struct DownloadOptions<'a> {
+    pub attempt_count: u32,
+    pub proxy: Option<&'a str>,
+    pub cache_file: Option<&'a str>,
+    pub image_format: &'a str,
+}
+
+pub async fn download_all_images<'a>(
     folder: &Path,
     dates: &[NaiveDate],
     job_count: usize,
-    attempt_count: u32,
     request_timeout: Duration,
     notify_fail: bool,
-    proxy: Option<String>,
     cache_url: Option<String>,
-    cache_file: Option<String>,
-    image_format: &str,
+    download_options: DownloadOptions<'a>,
 ) {
+    let DownloadOptions {
+        proxy, cache_file, ..
+    } = download_options;
+
     let client = Client::builder()
         .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36")
         .timeout(request_timeout)
         .build()
         .expect("Failed to build request client. This error should never occur.");
 
-    let proxy = proxy.as_deref();
     if let Some(proxy) = proxy {
         println!("    {DIM}Pinging proxy server...{RESET}");
         if let Err(error) = proxy::check_proxy_service(&client, proxy).await {
@@ -73,7 +81,7 @@ pub async fn download_all_images(
                 }
             };
             dates
-                .into_iter()
+                .iter()
                 .map(|date| DateUrlCached {
                     date: *date,
                     url: cached_dates.get(date).cloned(),
@@ -81,18 +89,17 @@ pub async fn download_all_images(
                 .collect()
         }
         None => dates
-            .into_iter()
+            .iter()
             .map(|date| DateUrlCached {
                 date: *date,
                 url: None,
             })
             .collect(),
     };
-    let cache_file = cache_file.as_deref();
 
     if let Some(cache_file) = cache_file {
         if let Err(error) = cache::append_cache_file_newline(cache_file) {
-            fatal_error(1, format!("{}", error), notify_fail);
+            fatal_error(1, error.to_string(), notify_fail);
         }
     }
 
@@ -109,11 +116,8 @@ pub async fn download_all_images(
                     date_cached.clone(),
                     folder,
                     job_id,
-                    attempt_count,
                     progress,
-                    proxy,
-                    cache_file,
-                    image_format,
+                    download_options,
                 )
                 .await
             }
@@ -129,7 +133,7 @@ pub async fn download_all_images(
         .await;
 
     if let Some(cache_file) = cache_file {
-        if let Err(error) = cache::clean_cache_file(&cache_file) {
+        if let Err(error) = cache::clean_cache_file(cache_file) {
             fatal_error(
                 6,
                 format!("Failed to clean cache file - {}", error),

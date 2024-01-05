@@ -10,14 +10,11 @@ use crate::dates::date_to_string;
 use crate::format_request_error;
 use crate::proxy;
 use crate::DateUrlCached;
+use crate::DownloadOptions;
 use crate::PROGRESS_COUNT;
 
 fn print_step(date: NaiveDate, job_id: usize, step: u32, total_count: usize) {
-    let alt = if step < 2 {
-        format!("{CYAN}")
-    } else {
-        String::new()
-    };
+    let alt = if step < 2 { CYAN } else { "" };
     let icon = if step == 3 { "✓" } else { " " };
     let step = format!(
         "{}{step}{DIM}{}{RESET}",
@@ -31,17 +28,21 @@ fn print_step(date: NaiveDate, job_id: usize, step: u32, total_count: usize) {
     );
 }
 
-pub async fn download_image(
+pub async fn download_image<'a>(
     client: &Client,
     date_cached: DateUrlCached,
     folder: &Path,
     job_id: usize,
-    attempt_count: u32,
     total_count: usize,
-    proxy: Option<&str>,
-    cache_file: Option<&str>,
-    image_format: &str,
+    download_options: DownloadOptions<'a>,
 ) -> Result<(), String> {
+    let DownloadOptions {
+        attempt_count,
+        proxy,
+        cache_file,
+        image_format,
+    } = download_options;
+
     let filename = date_to_string(date_cached.date, "-", true) + "." + image_format;
     let filename = Path::new(&filename);
     let filepath = folder.join(filename);

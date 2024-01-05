@@ -6,7 +6,7 @@ use humantime::format_duration;
 use std::time::{Duration, Instant};
 
 use crate::args::Args;
-use everygarf::{colors::*, dates, fatal_error, get_folder_path};
+use everygarf::{colors::*, dates, fatal_error, get_folder_path, DownloadOptions};
 
 #[tokio::main]
 async fn main() {
@@ -81,6 +81,13 @@ async fn main() {
     let cache_file = args.save_cache;
     let image_format = args.format.to_string();
 
+    let download_options = DownloadOptions {
+        attempt_count,
+        proxy: proxy.as_deref(),
+        cache_file: cache_file.as_deref(),
+        image_format: image_format.as_str(),
+    };
+
     if real_download_count > 0 {
         println!(
             "Downloading {BOLD}{}{RESET} images using (up to) {BOLD}{}{RESET} concurrent jobs...{RESET}",
@@ -91,13 +98,10 @@ async fn main() {
             &folder,
             &missing_dates,
             job_count,
-            attempt_count,
             request_timeout,
             notify_fail,
-            proxy,
             cache_url,
-            cache_file,
-            &image_format,
+            download_options,
         )
         .await;
     }
