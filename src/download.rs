@@ -40,8 +40,9 @@ pub async fn download_image(
     total_count: usize,
     proxy: Option<&str>,
     cache_file: Option<&str>,
+    image_format: &str,
 ) -> Result<(), String> {
-    let filename = date_to_string(date_cached.date, "-", true) + ".png";
+    let filename = date_to_string(date_cached.date, "-", true) + "." + image_format;
     let filename = Path::new(&filename);
     let filepath = folder.join(filename);
 

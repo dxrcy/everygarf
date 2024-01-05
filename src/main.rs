@@ -79,6 +79,7 @@ async fn main() {
         Some(args.cache)
     };
     let cache_file = args.save_cache;
+    let image_format = args.format.to_string();
 
     if real_download_count > 0 {
         println!(
@@ -96,6 +97,7 @@ async fn main() {
             proxy,
             cache_url,
             cache_file,
+            &image_format,
         )
         .await;
     }

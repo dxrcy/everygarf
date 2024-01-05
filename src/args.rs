@@ -1,5 +1,8 @@
-use clap::Parser;
-use std::num::{NonZeroU32, NonZeroU64, NonZeroUsize};
+use clap::{Parser, ValueEnum};
+use std::{
+    fmt::Display,
+    num::{NonZeroU32, NonZeroU64, NonZeroUsize},
+};
 
 /// EveryGarf Comic Downloader
 ///
@@ -65,7 +68,7 @@ pub struct Args {
     /// Specify cache file to read from
     ///
     /// Disable cache with `no-cache`
-    #[arg(long, short, conflicts_with = "no_cache", default_value = everygarf::CACHE_DEFAULT)]
+    #[arg(short, long, conflicts_with = "no_cache", default_value = everygarf::CACHE_DEFAULT)]
     pub cache: String,
 
     /// Do not read remote or local cache file
@@ -79,4 +82,26 @@ pub struct Args {
     /// Without `--no-cache`, this reuses the existing cached URLs
     #[arg(long)]
     pub save_cache: Option<String>,
+
+    /// Image format (file extension) to save images as
+    ///
+    /// Format is ignored when files are checked for missing images, so no two images will have the
+    /// same date, even if they have different file extensions
+    #[arg(short, long, ignore_case = true, default_value_t = Default::default())]
+    pub format: ImageFormat,
+}
+
+/// File extension to save images as
+#[derive(Default, Clone, Copy, ValueEnum)]
+pub enum ImageFormat {
+    #[default]
+    Png,
+    Jpg,
+    Gif,
+}
+
+impl Display for ImageFormat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_possible_value().unwrap().get_name())
+    }
 }

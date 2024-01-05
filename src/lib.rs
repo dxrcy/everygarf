@@ -38,6 +38,7 @@ pub async fn download_all_images(
     proxy: Option<String>,
     cache_url: Option<String>,
     cache_file: Option<String>,
+    image_format: &str,
 ) {
     let client = Client::builder()
         .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36")
@@ -112,6 +113,7 @@ pub async fn download_all_images(
                     progress,
                     proxy,
                     cache_file,
+                    image_format,
                 )
                 .await
             }
