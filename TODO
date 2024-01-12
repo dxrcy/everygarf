@@ -5,6 +5,7 @@ add cli options
     choose file format (jpg)
 
 overhaul error handling
+    use `thiserror`
     use enum, not string
         move error code into enum
     difference between cloudflare 429 vs other 429?

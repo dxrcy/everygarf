@@ -11,14 +11,7 @@ homepage = "https://github.com/darccyy/everygarf"
 readme = "README.md"
 keywords = ["download", "garfield", "comic", "concurrent", "cli"]
 categories = ["command-line-utilities", "concurrency"]
-exclude = [
-    ".*",
-    "/target/",
-    "/justfile",
-    "/TODO.md",
-    "/image/",
-    "/garfield/",
-]
+exclude = [".*", "/target/", "/justfile", "/TODO.md", "/image/", "/garfield/"]
 
 [dependencies]
 clap = { version = "4.4.8", features = ["derive"] }
