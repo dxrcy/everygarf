@@ -3,7 +3,10 @@ mod args;
 use clap::Parser;
 use human_bytes::human_bytes;
 use humantime::format_duration;
-use std::time::{Duration, Instant};
+use std::{
+    process,
+    time::{Duration, Instant},
+};
 
 use crate::args::Args;
 use everygarf::{colors::*, dates, fatal_error, get_folder_path, DownloadOptions};
@@ -11,10 +14,13 @@ use everygarf::{colors::*, dates, fatal_error, get_folder_path, DownloadOptions}
 #[tokio::main]
 async fn main() {
     let args = Args::parse();
-    print!("{BOLD}");
-    println!(" ┌─────────────┐");
-    println!(" │  EveryGarf  │");
-    println!(" └─────────────┘{RESET} {ITALIC}Comic Downloader{RESET}");
+
+    if !args.query {
+        print!("{BOLD}");
+        println!(" ┌─────────────┐");
+        println!(" │  EveryGarf  │");
+        println!(" └─────────────┘{RESET} {ITALIC}Comic Downloader{RESET}");
+    }
 
     let start_time = Instant::now();
     let notify_fail = args.notify_fail;
@@ -28,15 +34,18 @@ async fn main() {
     let job_count: usize = args.jobs.into();
     let attempt_count: u32 = args.attempts.into();
 
-    println!(
-        "{} in {UNDERLINE}{}{RESET}",
-        if args.remove_all {
-            "Removing all images"
-        } else {
-            "Checking for missing images"
-        },
-        folder_string
-    );
+    if !args.query {
+        println!(
+            "{} in {UNDERLINE}{}{RESET}",
+            if args.remove_all {
+                "Removing all images"
+            } else {
+                "Checking for missing images"
+            },
+            folder_string
+        );
+    }
+
     everygarf::create_target_dir(&folder, args.remove_all)
         .map_err(|error| {
             format!(
@@ -56,6 +65,13 @@ async fn main() {
         .collect();
 
     let total_download_count = missing_dates.len();
+    if args.query {
+        if total_download_count > 0 {
+            process::exit(10);
+        } else {
+            process::exit(0);
+        }
+    }
     if let Some(max) = args.max {
         println!(
             "There are {BOLD}{}{RESET} total missing images to download",

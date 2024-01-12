@@ -89,6 +89,12 @@ pub struct Args {
     /// same date, even if they have different file extensions
     #[arg(short, long, ignore_case = true, default_value_t = Default::default())]
     pub format: ImageFormat,
+
+    /// Returns exit code 10 if images are missing
+    ///
+    /// Does not print anything to stdout
+    #[arg(short, long)]
+    pub query: bool,
 }
 
 /// File extension to save images as
