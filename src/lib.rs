@@ -4,6 +4,7 @@ pub mod dates;
 mod download;
 mod io;
 pub mod proxy;
+pub mod errors;
 
 use chrono::NaiveDate;
 use futures::{stream, StreamExt};
@@ -63,7 +64,7 @@ pub async fn download_all_images<'a>(
                 proxy,
                 format_request_error(error),
             );
-            fatal_error(4, message, notify_fail);
+            fatal_error(errors::PROXY_PING, message, notify_fail);
         }
     }
 
@@ -77,7 +78,7 @@ pub async fn download_all_images<'a>(
                         "{}\n{RESET}{DIM}Please try running with `--no-cache` argument, or create an issue at https://github.com/darccyy/everygarf/issues/new{RESET}",
                         error,
                     );
-                    fatal_error(5, message, notify_fail)
+                    fatal_error(errors::CACHE_DOWNLOAD, message, notify_fail)
                 }
             };
             dates
@@ -99,7 +100,7 @@ pub async fn download_all_images<'a>(
 
     if let Some(cache_file) = cache_file {
         if let Err(error) = cache::append_cache_file_newline(cache_file) {
-            fatal_error(1, error.to_string(), notify_fail);
+            fatal_error(errors::CACHE_APPEND_NEWLINE, error.to_string(), notify_fail);
         }
     }
 
@@ -127,7 +128,7 @@ pub async fn download_all_images<'a>(
     bodies
         .for_each(|result| async {
             if let Err(error) = result {
-                fatal_error(1, error, notify_fail);
+                fatal_error(errors::DOWNLOAD_FAIL, error, notify_fail);
             }
         })
         .await;
@@ -135,7 +136,7 @@ pub async fn download_all_images<'a>(
     if let Some(cache_file) = cache_file {
         if let Err(error) = cache::clean_cache_file(cache_file) {
             fatal_error(
-                6,
+                errors::CLEAN_CACHE,
                 format!("Failed to clean cache file - {}", error),
                 notify_fail,
             );
@@ -171,12 +172,12 @@ fn format_request_error(error: reqwest::Error) -> String {
         return format!("{YELLOW}Bad connection.{RESET} Check your internet access.");
     }
 
-    let Some(status) = error.status() else {
+    let Some(errors) = error.status() else {
         return format!("{MAGENTA}Unknown error:{RESET} {:#?}", error);
     };
-    let code = status.as_u16();
+    let code = errors.as_u16();
 
-    let message = match (status, code) {
+    let message = match (errors, code) {
         (StatusCode::TOO_MANY_REQUESTS, _) => {
             format!("{RED}Rate limited.{RESET} Try again in a few minutes. See https://github.com/darccyy/everygarf#proxy-service for more information.")
         }

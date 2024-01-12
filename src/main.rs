@@ -9,7 +9,7 @@ use std::{
 };
 
 use crate::args::Args;
-use everygarf::{colors::*, dates, fatal_error, get_folder_path, DownloadOptions};
+use everygarf::{colors::*, dates, fatal_error, get_folder_path, errors, DownloadOptions};
 
 #[tokio::main]
 async fn main() {
@@ -26,7 +26,7 @@ async fn main() {
     let notify_fail = args.notify_fail;
 
     let folder = get_folder_path(args.folder.as_deref())
-        .unwrap_or_else(|error| fatal_error(2, error, notify_fail));
+        .unwrap_or_else(|error| fatal_error(errors::NO_DIR, error, notify_fail));
     let folder_string = folder.to_string_lossy();
 
     let start_date = args.start_from.unwrap_or(dates::first());
@@ -53,11 +53,11 @@ async fn main() {
                 folder_string, error,
             )
         })
-        .unwrap_or_else(|error| fatal_error(3, error, notify_fail));
+        .unwrap_or_else(|error| fatal_error(errors::CREATE_DIR, error, notify_fail));
 
     let all_dates = dates::get_dates_between(start_date, dates::latest());
     let existing_dates = everygarf::get_existing_dates(&folder)
-        .unwrap_or_else(|error| fatal_error(4, error, notify_fail));
+        .unwrap_or_else(|error| fatal_error(errors::READ_EXISTING_DATES, error, notify_fail));
 
     let mut missing_dates: Vec<_> = all_dates
         .into_iter()
@@ -67,9 +67,9 @@ async fn main() {
     let total_download_count = missing_dates.len();
     if args.query {
         if total_download_count > 0 {
-            process::exit(10);
+            process::exit(errors::QUERY_SOME as i32);
         } else {
-            process::exit(0);
+            process::exit(errors::QUERY_NONE as i32);
         }
     }
     if let Some(max) = args.max {
