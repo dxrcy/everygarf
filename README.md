@@ -40,6 +40,9 @@ everygarf
 
 # Change some options
 everygarf ~/Pictures/garfield --remove-all --notify-fail --attempts 20 --timeout 30 --jobs 40 --max 300
+
+# Check if any images are missing
+everygarf --query && echo 'Up to date!'
 ```
 
 # About
