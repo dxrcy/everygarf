@@ -12,7 +12,7 @@ Concurrently download every Garfield comic to date.
 
 ## Binary
 
-[Download latest release](https://github.com/darccyy/everygarf/releases/latest) (executable)
+[Download latest release](https://github.com/dxrcy/everygarf/releases/latest) (executable)
 
 ## Cargo (from source)
 
@@ -25,7 +25,7 @@ cargo install everygarf
 Or clone repository, and install with `cargo`.
 
 ```sh
-git clone https://github.com/darccyy/everygarf
+git clone https://github.com/dxrcy/everygarf
 cargo install --path everygarf
 ```
 
@@ -85,7 +85,7 @@ This is not recommended, you will most likely get immediately rate limited by [g
 ## Cached image URLs
 
 Without image URL caching, each image would require 2 requests (see [API](#api)).
-By default, it checks for existing cached image URLs by fetching [darccyy/everygarf-cache](https://github.com/darccyy/everygarf-cache).
+By default, it checks for existing cached image URLs by fetching [dxrcy/everygarf-cache](https://github.com/dxrcy/everygarf-cache).
 Disable with `--no-cache`, use a custom cache file URL (remote or local) with `--cache`, save your own cache file with `--save-cache`.
 
 # Automatically Running with Systemd Timer
@@ -136,16 +136,16 @@ systemctl --user start everygarf.timer
 
 # Setup a custom proxy service with Cloudflare worker
 
-> This has not been tested very well! It works on my machine, but if you have any problems, please [open an issue](https://github.com/darccyy/everygarf/issues/new)
+> This has not been tested very well! It works on my machine, but if you have any problems, please [open an issue](https://github.com/dxrcy/everygarf/issues/new)
 
-Setup a Cloudflare worker with [Zibri/cloudflare-cors-anywhere](https://github.com/darccyy/cloudflare-cors-anywhere), and pass in the URL with `--proxy`.
+Setup a Cloudflare worker with [Zibri/cloudflare-cors-anywhere](https://github.com/dxrcy/cloudflare-cors-anywhere), and pass in the URL with `--proxy`.
 
 1. [Create a Cloudflare account](https://dash.cloudflare.com/sign-up)
 2. Install [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (Node package manager)
 3. Clone the repository
 
 ```sh
-git clone https://github.com/darccyy/cloudflare-cors-anywhere myproxy
+git clone https://github.com/dxrcy/cloudflare-cors-anywhere myproxy
 cd myproxy
 npm install --include=dev
 ```
@@ -191,7 +191,7 @@ everygarf --proxy "https://myproxy.<YOURUSERNAME>.workers.dev/cors-proxy"
 # Disclaimer
 
 This project has no connection to *Garfield* or *Paws, Inc*. 
-If you have any issues or concerns, please [open a GitHub issue](https://github.com/darccyy/everygarf/issues/new).
+If you have any issues or concerns, please [open a GitHub issue](https://github.com/dxrcy/everygarf/issues/new).
 
 ---
 

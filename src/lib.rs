@@ -18,7 +18,7 @@ pub use crate::io::{create_target_dir, get_folder_path};
 
 pub const PROXY_DEFAULT: &str = "https://proxy.darcy-700.workers.dev/cors-proxy";
 pub const CACHE_DEFAULT: &str =
-    "https://raw.githubusercontent.com/darccyy/everygarf-cache/master/cache";
+    "https://raw.githubusercontent.com/dxrcy/everygarf-cache/master/cache";
 
 static mut PROGRESS_COUNT: u32 = 0;
 
@@ -60,7 +60,7 @@ pub async fn download_all_images<'a>(
         println!("    {DIM}Pinging proxy server...{RESET}");
         if let Err(error) = proxy::check_proxy_service(&client, proxy).await {
             let message = format!(
-                "{RED}{BOLD}Proxy service unavailable{RESET} - {}.\n{DIM}Trying to ping {UNDERLINE}{}{RESET}\nPlease try later, or create an issue at https://github.com/darccyy/everygarf/issues/new",
+                "{RED}{BOLD}Proxy service unavailable{RESET} - {}.\n{DIM}Trying to ping {UNDERLINE}{}{RESET}\nPlease try later, or create an issue at https://github.com/dxrcy/everygarf/issues/new",
                 proxy,
                 format_request_error(error),
             );
@@ -75,7 +75,7 @@ pub async fn download_all_images<'a>(
                 Ok(dates) => dates,
                 Err(error) => {
                     let message = format!(
-                        "{}\n{RESET}{DIM}Please try running with `--no-cache` argument, or create an issue at https://github.com/darccyy/everygarf/issues/new{RESET}",
+                        "{}\n{RESET}{DIM}Please try running with `--no-cache` argument, or create an issue at https://github.com/dxrcy/everygarf/issues/new{RESET}",
                         error,
                     );
                     fatal_error(errors::CACHE_DOWNLOAD, message, notify_fail)
@@ -179,7 +179,7 @@ fn format_request_error(error: reqwest::Error) -> String {
 
     let message = match (errors, code) {
         (StatusCode::TOO_MANY_REQUESTS, _) => {
-            format!("{RED}Rate limited.{RESET} Try again in a few minutes. See https://github.com/darccyy/everygarf#proxy-service for more information.")
+            format!("{RED}Rate limited.{RESET} Try again in a few minutes. See https://github.com/dxrcy/everygarf#proxy-service for more information.")
         }
         (_, 525) => "SSL handshake failed with Cloudflare.".to_string(),
         (_, 500) => "Server error - Try again later.".to_string(),

@@ -55,13 +55,13 @@ pub struct Args {
 
     /// Url of custom proxy service
     ///
-    /// See [https://github.com/darccyy/everygarf#proxy-service] for more information
+    /// See [https://github.com/dxrcy/everygarf#proxy-service] for more information
     #[arg(long, conflicts_with = "no_proxy", default_value = everygarf::PROXY_DEFAULT)]
     pub proxy: String,
 
     /// Do not use a proxy service (not recommended)
     ///
-    /// See [https://github.com/darccyy/everygarf#proxy-service] for more information
+    /// See [https://github.com/dxrcy/everygarf#proxy-service] for more information
     #[arg(long, conflicts_with = "proxy")]
     pub no_proxy: bool,
 
