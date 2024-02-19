@@ -1,8 +1,9 @@
 use std::collections::HashMap;
+use std::fs::File;
 use std::{fs, io::Write};
 
 use chrono::NaiveDate;
-use futures::TryFutureExt;
+use futures::{io, TryFutureExt};
 use reqwest::Client;
 
 use crate::colors::*;
@@ -68,15 +69,19 @@ async fn fetch_text(client: &Client, url: &str) -> Result<String, reqwest::Error
         .await
 }
 
-pub fn append_cache_file(date: NaiveDate, image_url: &str, cache_file: &str) -> Result<(), String> {
-    let mut file = fs::OpenOptions::new()
+fn open_cache_file_to_append(cache_file: &str) -> Result<File, String> {
+    fs::OpenOptions::new()
         .create(true)
         .append(true)
         .open(cache_file)
-        .map_err(|error| format!("Opening cache file - {}", error))?;
+        .map_err(|error| format!("Opening cache file - {}", error))
+}
 
+pub fn append_cache_file(date: NaiveDate, image_url: &str, cache_file: &str) -> Result<(), String> {
+    let mut file = open_cache_file_to_append(cache_file)?;
     writeln!(file, "{} {}", date, minify_image_url(image_url))
-        .map_err(|error| format!("Writing to cache file - {}", error))
+        .map_err(|error| format!("Writing to cache file - {}", error))?;
+    Ok(())
 }
 
 const IMAGE_URL_BASE: &str = "https://assets.amuniversal.com/";
@@ -89,4 +94,32 @@ fn expand_image_url(minified: &str) -> String {
         return minified.to_string();
     }
     IMAGE_URL_BASE.to_string() + minified
+}
+
+pub fn clean_cache_file(cache_file: &str) -> io::Result<()> {
+    let file = fs::read_to_string(cache_file)?;
+    let rows: Vec<_> = file.lines().collect();
+
+    // remove duplicates
+    // keep last instance of each date
+    let mut unique_rows = Vec::new();
+    let mut seen_dates = Vec::new();
+    for row in rows.into_iter().rev() {
+        let Some((date, _)) = split_first_word(row) else {
+            continue;
+        };
+        if seen_dates.contains(&date) {
+            continue;
+        }
+        unique_rows.push(row);
+        seen_dates.push(date);
+    }
+
+    // sort by date (alphabetically)
+    unique_rows.sort();
+
+    // with trailing newline
+    let file = unique_rows.join("\n") + "\n";
+
+    fs::write(cache_file, file)
 }
