@@ -20,6 +20,8 @@ pub const PROXY_DEFAULT: &str = "https://proxy.darcy-700.workers.dev/cors-proxy"
 pub const CACHE_DEFAULT: &str =
     "https://raw.githubusercontent.com/dxrcy/everygarf-cache/master/cache";
 
+const ISSUE_URL: &str = "https://github.com/dxrcy/everygarf/issues/new";
+
 static mut PROGRESS_COUNT: u32 = 0;
 
 pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {
@@ -60,7 +62,7 @@ pub async fn download_all_images<'a>(
         println!("    {DIM}Pinging proxy server...{RESET}");
         if let Err(error) = proxy::check_proxy_service(&client, proxy).await {
             let message = format!(
-                "{RED}{BOLD}Proxy service unavailable{RESET} - {}.\n{DIM}Trying to ping {UNDERLINE}{}{RESET}\nPlease try later, or create an issue at https://github.com/dxrcy/everygarf/issues/new",
+                "{RED}{BOLD}Proxy service unavailable{RESET} - {}.\n{DIM}Trying to ping {UNDERLINE}{}{RESET}\nPlease try later, or create an issue at {ISSUE_URL}",
                 proxy,
                 format_request_error(error),
             );
@@ -79,7 +81,7 @@ pub async fn download_all_images<'a>(
                 Ok(dates) => dates,
                 Err(error) => {
                     let message = format!(
-                        "{}\n{RESET}{DIM}Please try running with `--no-cache` argument, or create an issue at https://github.com/dxrcy/everygarf/issues/new{RESET}",
+                        "{}\n{RESET}{DIM}Please try running with `--no-cache` argument, or create an issue at {ISSUE_URL}{RESET}",
                         error,
                     );
                     fatal_error(errors::CACHE_DOWNLOAD, message, notify_fail)
