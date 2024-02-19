@@ -2,9 +2,9 @@ mod cache;
 pub mod colors;
 pub mod dates;
 mod download;
+pub mod errors;
 mod io;
 pub mod proxy;
-pub mod errors;
 
 use chrono::NaiveDate;
 use futures::{stream, StreamExt};
@@ -70,7 +70,11 @@ pub async fn download_all_images<'a>(
 
     let dates_cached: Vec<_> = match cache_url {
         Some(cache_url) => {
-            println!("    {DIM}Downloading cached URLs...{RESET}");
+            if cache::is_remote_url(&cache_url) {
+                println!("    {DIM}Downloading cached URLs...{RESET}");
+            } else {
+                println!("    {DIM}Reading cached URLs...{RESET}");
+            }
             let cached_dates = match cache::fetch_cached_urls(&client, &cache_url).await {
                 Ok(dates) => dates,
                 Err(error) => {

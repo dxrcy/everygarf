@@ -35,7 +35,7 @@ pub async fn fetch_cached_urls(client: &Client, cache_url: &str) -> Result<DateM
     parse_cached_urls(&text).map_err(|_error| "Failed to parse cache file".to_string())
 }
 
-fn is_remote_url(url: &str) -> bool {
+pub fn is_remote_url(url: &str) -> bool {
     url.starts_with("http://") || url.starts_with("https://")
 }
 
