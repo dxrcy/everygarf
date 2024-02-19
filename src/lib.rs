@@ -2,9 +2,9 @@ mod cache;
 pub mod colors;
 pub mod dates;
 mod download;
+pub mod errors;
 mod io;
 pub mod proxy;
-pub mod errors;
 
 use chrono::NaiveDate;
 use futures::{stream, StreamExt};
@@ -46,9 +46,7 @@ pub async fn download_all_images<'a>(
     cache_url: Option<String>,
     download_options: DownloadOptions<'a>,
 ) {
-    let DownloadOptions {
-        proxy, cache_file, ..
-    } = download_options;
+    let DownloadOptions { proxy, .. } = download_options;
 
     let client = Client::builder()
         .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36")
@@ -98,12 +96,6 @@ pub async fn download_all_images<'a>(
             .collect(),
     };
 
-    if let Some(cache_file) = cache_file {
-        if let Err(error) = cache::append_cache_file_newline(cache_file) {
-            fatal_error(errors::CACHE_APPEND_NEWLINE, error.to_string(), notify_fail);
-        }
-    }
-
     unsafe { PROGRESS_COUNT = 0 }
 
     let bodies = stream::iter(dates_cached.iter().enumerate())
@@ -132,16 +124,6 @@ pub async fn download_all_images<'a>(
             }
         })
         .await;
-
-    if let Some(cache_file) = cache_file {
-        if let Err(error) = cache::clean_cache_file(cache_file) {
-            fatal_error(
-                errors::CLEAN_CACHE,
-                format!("Failed to clean cache file - {}", error),
-                notify_fail,
-            );
-        }
-    }
 }
 
 pub fn fatal_error(code: u8, message: String, notify: bool) -> ! {
