@@ -44,6 +44,7 @@ pub async fn download_all_images<'a>(
     dates: &[NaiveDate],
     job_count: usize,
     request_timeout: Duration,
+    request_timeout_initial: Duration,
     notify_fail: bool,
     cache_url: Option<String>,
     download_options: DownloadOptions<'a>,
@@ -52,15 +53,23 @@ pub async fn download_all_images<'a>(
         proxy, cache_file, ..
     } = download_options;
 
-    let client = Client::builder()
-        .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36")
+    const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36";
+
+    let client_initial = Client::builder()
+        .user_agent(USER_AGENT)
+        .timeout(request_timeout_initial)
+        .build()
+        .expect("Failed to build request client (initial). This error should never occur.");
+
+    let client_main = Client::builder()
+        .user_agent(USER_AGENT)
         .timeout(request_timeout)
         .build()
-        .expect("Failed to build request client. This error should never occur.");
+        .expect("Failed to build request client (main). This error should never occur.");
 
     if let Some(proxy) = proxy {
         println!("    {DIM}Pinging proxy server...{RESET}");
-        if let Err(error) = proxy::check_proxy_service(&client, proxy).await {
+        if let Err(error) = proxy::check_proxy_service(&client_initial, proxy).await {
             let message = format!(
                 "{RED}{BOLD}Proxy service unavailable{RESET} - {}.\n{DIM}Trying to ping {UNDERLINE}{}{RESET}\nPlease try later, or create an issue at {ISSUE_URL}",
                 proxy,
@@ -77,7 +86,7 @@ pub async fn download_all_images<'a>(
             } else {
                 println!("    {DIM}Reading cached URLs...{RESET}");
             }
-            let cached_dates = match cache::fetch_cached_urls(&client, &cache_url).await {
+            let cached_dates = match cache::fetch_cached_urls(&client_initial, &cache_url).await {
                 Ok(dates) => dates,
                 Err(error) => {
                     let message = format!(
@@ -109,7 +118,7 @@ pub async fn download_all_images<'a>(
     let bodies = stream::iter(dates_cached.iter().enumerate())
         .map(|(i, date_cached)| {
             let job_id = i % job_count;
-            let client = &client;
+            let client = &client_main;
             let progress = dates_cached.len();
             async move {
                 download::download_image(
