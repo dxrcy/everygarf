@@ -43,7 +43,7 @@ pub async fn download_all_images<'a>(
     folder: &Path,
     dates: &[NaiveDate],
     job_count: usize,
-    request_timeout: Duration,
+    request_timeout_main: Duration,
     request_timeout_initial: Duration,
     notify_fail: bool,
     cache_url: Option<String>,
@@ -63,7 +63,7 @@ pub async fn download_all_images<'a>(
 
     let client_main = Client::builder()
         .user_agent(USER_AGENT)
-        .timeout(request_timeout)
+        .timeout(request_timeout_main)
         .build()
         .expect("Failed to build request client (main). This error should never occur.");
 
