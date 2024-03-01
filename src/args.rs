@@ -33,13 +33,13 @@ pub struct Args {
     #[arg(short, long, default_value_t = NonZeroUsize::new(20).unwrap())]
     pub jobs: NonZeroUsize,
 
-    /// Timeout for HTTP requests (seconds)
-    #[arg(short = 'T', long, default_value_t = NonZeroU64::new(10).unwrap())]
-    pub initial_timeout: NonZeroU64,
-
-    /// Timeout for HTTP requests (seconds)
+    /// Timeout for url and image requests (seconds)
     #[arg(short, long, default_value_t = NonZeroU64::new(5).unwrap())]
     pub timeout: NonZeroU64,
+
+    /// Timeout for proxy ping and cache fetch (seconds)
+    #[arg(short = 'T', long, default_value_t = NonZeroU64::new(10).unwrap())]
+    pub initial_timeout: NonZeroU64,
 
     /// Amount of fetch attempts allowed per thread, before hard error
     #[arg(short, long, default_value_t = NonZeroU32::new(10).unwrap())]
