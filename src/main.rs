@@ -9,7 +9,7 @@ use std::{
 };
 
 use crate::args::Args;
-use everygarf::{colors::*, dates, fatal_error, get_folder_path, errors, DownloadOptions};
+use everygarf::{colors::*, dates, errors, fatal_error, get_folder_path, DownloadOptions};
 
 #[tokio::main]
 async fn main() {
