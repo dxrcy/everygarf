@@ -188,6 +188,21 @@ npm run deploy
 everygarf --proxy "https://myproxy.<YOURUSERNAME>.workers.dev/cors-proxy"
 ```
 
+# Contributing
+
+```sh
+# Clone the repo
+git clone https://github.com/dxrcy/everygarf
+cd everygarf
+# Install build dependency
+cargo install just
+
+# (Make an amazing change...)
+
+# Check for issues
+just check
+```
+
 # Disclaimer
 
 This project has no connection to *Garfield* or *Paws, Inc*. 
