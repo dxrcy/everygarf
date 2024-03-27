@@ -4,7 +4,7 @@ Concurrently download every Garfield comic to date.
 
 ## Stats
 
-- Download size: 4.8GB
+- Download size: 4.9GB
 - Download time: ~20m[*](#download-time)
 - Images: >16,400
 
