@@ -30,8 +30,8 @@ async fn main() {
     let folder_string = folder.to_string_lossy();
 
     let start_date = args.start_from.unwrap_or(dates::first());
-    let request_timeout = Duration::from_secs(args.timeout.into());
-    let request_timeout_initial = Duration::from_secs(args.initial_timeout.into());
+    let timeout = Duration::from_secs(args.timeout.into());
+    let timeout_initial = Duration::from_secs(args.initial_timeout.into());
     let job_count: usize = args.jobs.into();
     let attempt_count: u32 = args.attempts.into();
 
@@ -115,8 +115,7 @@ async fn main() {
             &folder,
             &missing_dates,
             job_count,
-            request_timeout,
-            request_timeout_initial,
+            [timeout, timeout_initial],
             notify_fail,
             cache_url,
             download_options,
