@@ -25,10 +25,6 @@ check:
 cross:
     cross build --release --target x86_64-pc-windows-gnu
 
-# Publish to Crates.io
-publish:
-    cargo publish
-
 # Move release builds to dist directory
 dist:
     [ -e dist/ ] && rm -rf dist/ ;\
@@ -36,4 +32,8 @@ dist:
     mv target/release/{{name}} dist/ &&\
     mv target/x86_64-pc-windows-gnu/release/{{name}}.exe dist/ &&\
     ls dist
+
+# Publish to Crates.io
+publish:
+    cargo publish
 
