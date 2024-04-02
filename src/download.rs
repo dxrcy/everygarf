@@ -129,15 +129,24 @@ async fn fetch_image_url_from_date(
         format!("Converting webpage body for image URL to text ({url}) - {error}")
     })?;
 
-    let Some(char_index) = response_body.find("https://assets.amuniversal.com") else {
+    const IMAGE_URL_BASE: &str = "https://static.wikia.nocookie.net";
+
+    let Some(char_index_left) = response_body.find(IMAGE_URL_BASE) else {
         return Err(format!("Cannot find image URL in webpage body ({url})"));
     };
 
-    let Some(image_url) = response_body.get(char_index..char_index + 63) else {
+    let mut char_index_right = char_index_left + IMAGE_URL_BASE.len() + 1;
+    let mut chars = response_body.chars().skip(char_index_right);
+    while chars.next().is_some_and(|ch| ch != '"') {
+        char_index_right += 1;
+    }
+
+    let Some(image_url) = response_body.get(char_index_left..char_index_right) else {
         return Err(format!(
             "Slicing text of webpage body for image URL ({url})"
         ));
     };
+    println!("{}", image_url);
 
     Ok(image_url.to_owned())
 }
