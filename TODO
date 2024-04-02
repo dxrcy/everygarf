@@ -1,3 +1,7 @@
+alternative source apis
+    merge `apis` and `proxy` modules ?
+    add argument: `--source` or `--api`
+
 add tests :(
 
 add cli options
@@ -13,5 +17,3 @@ overhaul error handling
 readme
     make better
 
-better api?
-    https://garfield.fandom.com/wiki/Garfield,_March_2004_comic_strips?file=2004-03-01.gif
