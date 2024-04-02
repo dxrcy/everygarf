@@ -4,6 +4,7 @@ use image::DynamicImage;
 use reqwest::Client;
 use std::path::Path;
 
+use crate::apis::SourceAPI;
 use crate::cache;
 use crate::colors::*;
 use crate::dates::date_to_string;
@@ -35,6 +36,7 @@ pub async fn download_image<'a>(
     job_id: usize,
     total_count: usize,
     download_options: DownloadOptions<'a>,
+    api: SourceAPI,
 ) -> Result<(), String> {
     let DownloadOptions {
         attempt_count,
@@ -48,8 +50,16 @@ pub async fn download_image<'a>(
     let filepath = folder.join(filename);
 
     for attempt_no in 1..=attempt_count {
-        let result =
-            fetch_image(client, &date_cached, job_id, total_count, proxy, cache_file).await;
+        let result = fetch_image(
+            client,
+            &date_cached,
+            job_id,
+            total_count,
+            proxy,
+            cache_file,
+            api,
+        )
+        .await;
         match result {
             Ok(image) => {
                 if let Err(error) = image.save(filepath) {
@@ -83,12 +93,13 @@ async fn fetch_image(
     total_count: usize,
     proxy: Option<&str>,
     cache_file: Option<&str>,
+    api: SourceAPI,
 ) -> Result<DynamicImage, String> {
     let image_url = match &date_cached.url {
         Some(url) => url.to_owned(),
         None => {
             print_step(date_cached.date, job_id, 1, total_count);
-            fetch_image_url_from_date(client, date_cached.date, proxy)
+            fetch_image_url_from_date(client, date_cached.date, proxy, api)
                 .await
                 .map_err(|error| format!("Fetching image url - {}", error))?
         }
@@ -114,8 +125,9 @@ async fn fetch_image_url_from_date(
     client: &Client,
     date: NaiveDate,
     proxy: Option<&str>,
+    api: SourceAPI,
 ) -> Result<String, String> {
-    let url = proxy::webpage_proxied(date, proxy);
+    let url = proxy::webpage_proxied(date, proxy, api);
 
     let response = client
         .get(&url)
@@ -129,22 +141,8 @@ async fn fetch_image_url_from_date(
         format!("Converting webpage body for image URL to text ({url}) - {error}")
     })?;
 
-    const IMAGE_URL_BASE: &str = "https://static.wikia.nocookie.net";
-
-    let Some(char_index_left) = response_body.find(IMAGE_URL_BASE) else {
+    let Some(image_url) = api.find_image_url(&response_body) else {
         return Err(format!("Cannot find image URL in webpage body ({url})"));
-    };
-
-    let mut char_index_right = char_index_left + IMAGE_URL_BASE.len() + 1;
-    let mut chars = response_body.chars().skip(char_index_right);
-    while chars.next().is_some_and(|ch| ch != '"') {
-        char_index_right += 1;
-    }
-
-    let Some(image_url) = response_body.get(char_index_left..char_index_right) else {
-        return Err(format!(
-            "Slicing text of webpage body for image URL ({url})"
-        ));
     };
     println!("{}", image_url);
 

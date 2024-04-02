@@ -1,20 +1,22 @@
-mod cache;
 pub mod colors;
 pub mod dates;
-mod download;
 pub mod errors;
-mod io;
 pub mod proxy;
+
+mod apis;
+mod cache;
+mod download;
+mod io;
 
 use chrono::NaiveDate;
 use futures::{stream, StreamExt};
 use reqwest::{Client, StatusCode};
 use std::{path::Path, process, time::Duration};
 
-use crate::cache::DateUrlCached;
 use crate::colors::*;
 use crate::dates::date_from_filename;
 pub use crate::io::{create_target_dir, get_folder_path};
+use crate::{apis::SourceAPI, cache::DateUrlCached};
 
 pub const PROXY_DEFAULT: &str = "https://proxy.darcy-700.workers.dev/cors-proxy";
 pub const CACHE_DEFAULT: &str =
@@ -78,6 +80,8 @@ pub async fn download_all_images<'a>(
         }
     }
 
+    let api = SourceAPI::Fandom;
+
     let dates_cached: Vec<_> = match cache_url {
         Some(cache_url) => {
             if cache::is_remote_url(&cache_url) {
@@ -127,6 +131,7 @@ pub async fn download_all_images<'a>(
                     job_id,
                     progress,
                     download_options,
+                    api,
                 )
                 .await
             }
