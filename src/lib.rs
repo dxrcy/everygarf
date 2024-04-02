@@ -80,7 +80,7 @@ pub async fn download_all_images<'a>(
         }
     }
 
-    let api = SourceAPI::GoComics;
+    let api = SourceAPI::Gocomics;
 
     let dates_cached: Vec<_> = match cache_url {
         Some(cache_url) => {

@@ -4,14 +4,14 @@ use crate::dates::{date_month_to_string, date_to_string};
 
 #[derive(Clone, Copy, Debug)]
 pub enum SourceAPI {
-    GoComics,
+    Gocomics,
     Fandom,
 }
 
 impl SourceAPI {
     pub fn get_page_url(&self, date: NaiveDate) -> String {
         match &self {
-            Self::GoComics => {
+            Self::Gocomics => {
                 let date_string = date_to_string(date, "/", false);
                 format!("https://www.gocomics.com/garfield/{}", date_string)
             }
@@ -31,7 +31,7 @@ impl SourceAPI {
 
     pub fn find_image_url<'a>(&self, body: &'a str) -> Option<&'a str> {
         match &self {
-            Self::GoComics => {
+            Self::Gocomics => {
                 // make this consistent with Self::Fandom
                 let char_index = body.find("https://assets.amuniversal.com")?;
                 body.get(char_index..char_index + 63)
