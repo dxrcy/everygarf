@@ -56,6 +56,28 @@ async fn main() {
         })
         .unwrap_or_else(|error| fatal_error(errors::CREATE_DIR, error, notify_fail));
 
+    let (first_date, today_date) = (dates::first(), dates::today());
+    if start_date < first_date {
+        fatal_error(
+            errors::BAD_START_DATE,
+            format!(
+                "Start date must not be before date of first comic ({})",
+                first_date,
+            ),
+            notify_fail,
+        );
+    }
+    if start_date > today_date {
+        fatal_error(
+            errors::BAD_START_DATE,
+            format!(
+                "Start date must not be after today's date (UTC - {})",
+                today_date,
+            ),
+            notify_fail,
+        );
+    }
+
     let all_dates = dates::get_dates_between(start_date, dates::latest());
     let existing_dates = everygarf::get_existing_dates(&folder)
         .unwrap_or_else(|error| fatal_error(errors::READ_EXISTING_DATES, error, notify_fail));

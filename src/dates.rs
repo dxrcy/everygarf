@@ -37,6 +37,10 @@ pub fn latest() -> NaiveDate {
     now.date_naive() - Duration::days(if now.time() > time_of_publish { 0 } else { 1 })
 }
 
+pub fn today() -> NaiveDate {
+    Utc::now().date_naive()
+}
+
 pub fn get_dates_between(start: NaiveDate, end: NaiveDate) -> Vec<NaiveDate> {
     (0..=(end - start).num_days())
         .map(|days| start + Duration::days(days))
