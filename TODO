@@ -1,6 +1,10 @@
 alternative source apis
     merge `apis` and `proxy` modules ?
     add argument: `--source` or `--api`
+        struct Source {
+            api: SourceApi,
+            proxy: Option<String>,
+        }
 
 add tests :(
 
