@@ -1,3 +1,8 @@
+alternative source apis
+    add to readme
+    add arg docs
+    benchmark each source
+
 add tests :(
 
 add cli options
@@ -10,8 +15,11 @@ overhaul error handling
         move error code into enum
     difference between cloudflare 429 vs other 429?
 
+document public items
+
 readme
     make better
 
-better api?
-    https://garfield.fandom.com/wiki/Garfield,_March_2004_comic_strips?file=2004-03-01.gif
+linting
+    standardize `use` statement order
+

@@ -69,6 +69,10 @@ pub struct Args {
     #[arg(long, conflicts_with = "proxy")]
     pub no_proxy: bool,
 
+    /// Source for image URLs
+    #[arg(long, default_value_t = everygarf::api::Source::default())]
+    pub source: everygarf::api::Source,
+
     /// Specify cache file to read from
     ///
     /// Disable cache with `no-cache`
