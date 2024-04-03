@@ -10,7 +10,7 @@ repository = "https://github.com/dxrcy/everygarf"
 homepage = "https://github.com/dxrcy/everygarf"
 readme = "README.md"
 keywords = ["download", "garfield", "comic", "concurrent", "cli"]
-categories = ["command-line-utilities", "concurrency"]
+categories = ["command-line-utilities"]
 exclude = [".*", "/target/", "/justfile", "/TODO.md", "/image/", "/garfield/"]
 
 [dependencies]
