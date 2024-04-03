@@ -9,7 +9,11 @@ use std::{
 };
 
 use crate::args::Args;
-use everygarf::{colors::*, dates, errors, fatal_error, get_folder_path, DownloadOptions};
+use everygarf::{
+    api::{self, SourceApi},
+    colors::*,
+    dates, errors, fatal_error, get_folder_path, DownloadOptions,
+};
 
 #[tokio::main]
 async fn main() {
@@ -95,12 +99,18 @@ async fn main() {
     } else {
         Some(args.cache)
     };
+
+    let source_api = SourceApi {
+        source: api::Source::Gocomics,
+        proxy: proxy.as_deref(),
+    };
+
     let cache_file = args.save_cache;
     let image_format = args.format.to_string();
 
     let download_options = DownloadOptions {
         attempt_count,
-        proxy: proxy.as_deref(),
+        source_api,
         cache_file: cache_file.as_deref(),
         image_format: image_format.as_str(),
     };

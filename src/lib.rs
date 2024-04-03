@@ -1,9 +1,8 @@
 pub mod colors;
 pub mod dates;
 pub mod errors;
-pub mod proxy;
 
-mod apis;
+pub mod api;
 mod cache;
 mod download;
 mod io;
@@ -16,7 +15,7 @@ use std::{path::Path, process, time::Duration};
 use crate::colors::*;
 use crate::dates::date_from_filename;
 pub use crate::io::{create_target_dir, get_folder_path};
-use crate::{apis::SourceAPI, cache::DateUrlCached};
+use crate::{api::SourceApi, cache::DateUrlCached};
 
 pub const PROXY_DEFAULT: &str = "https://proxy.darcy-700.workers.dev/cors-proxy";
 pub const CACHE_DEFAULT: &str =
@@ -36,7 +35,7 @@ pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {
 #[derive(Clone, Copy)]
 pub struct DownloadOptions<'a> {
     pub attempt_count: u32,
-    pub proxy: Option<&'a str>,
+    pub source_api: SourceApi<'a>,
     pub cache_file: Option<&'a str>,
     pub image_format: &'a str,
 }
@@ -51,7 +50,9 @@ pub async fn download_all_images<'a>(
     download_options: DownloadOptions<'a>,
 ) {
     let DownloadOptions {
-        proxy, cache_file, ..
+        source_api,
+        cache_file,
+        ..
     } = download_options;
 
     const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36";
@@ -68,9 +69,9 @@ pub async fn download_all_images<'a>(
         .build()
         .expect("Failed to build request client (main). This error should never occur.");
 
-    if let Some(proxy) = proxy {
+    if let Some(proxy) = source_api.proxy {
         println!("    {DIM}Pinging proxy server...{RESET}");
-        if let Err(error) = proxy::check_proxy_service(&client_initial, proxy).await {
+        if let Err(error) = api::check_proxy_service(&client_initial, proxy).await {
             let message = format!(
                 "{RED}{BOLD}Proxy service unavailable{RESET} - {}.\n{DIM}Trying to ping {UNDERLINE}{}{RESET}\nPlease try later, or create an issue at {ISSUE_URL}",
                 proxy,
@@ -80,7 +81,7 @@ pub async fn download_all_images<'a>(
         }
     }
 
-    let api = SourceAPI::Gocomics;
+    dbg!(source_api);
 
     let dates_cached: Vec<_> = match cache_url {
         Some(cache_url) => {
@@ -131,7 +132,6 @@ pub async fn download_all_images<'a>(
                     job_id,
                     progress,
                     download_options,
-                    api,
                 )
                 .await
             }

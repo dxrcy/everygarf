@@ -1,14 +1,36 @@
 use chrono::{Datelike, NaiveDate};
+use reqwest::Client;
 
 use crate::dates::{date_month_to_string, date_to_string};
 
 #[derive(Clone, Copy, Debug)]
-pub enum SourceAPI {
+pub struct SourceApi<'a> {
+    pub source: Source,
+    pub proxy: Option<&'a str>,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum Source {
     Gocomics,
     Fandom,
 }
 
-impl SourceAPI {
+pub async fn check_proxy_service(client: &Client, proxy: &str) -> Result<(), reqwest::Error> {
+    client.get(proxy).send().await?.error_for_status()?;
+    Ok(())
+}
+
+impl<'a> SourceApi<'a> {
+    pub fn get_page_url(&self, date: NaiveDate) -> String {
+        let url = self.source.get_page_url(date);
+        match self.proxy {
+            None => url,
+            Some(proxy) => proxy.to_string() + "?" + &url,
+        }
+    }
+}
+
+impl Source {
     pub fn get_page_url(&self, date: NaiveDate) -> String {
         match &self {
             Self::Gocomics => {

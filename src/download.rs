@@ -4,12 +4,11 @@ use image::DynamicImage;
 use reqwest::Client;
 use std::path::Path;
 
-use crate::apis::SourceAPI;
+use crate::api::SourceApi;
 use crate::cache;
 use crate::colors::*;
 use crate::dates::date_to_string;
 use crate::format_request_error;
-use crate::proxy;
 use crate::DateUrlCached;
 use crate::DownloadOptions;
 use crate::PROGRESS_COUNT;
@@ -36,11 +35,10 @@ pub async fn download_image<'a>(
     job_id: usize,
     total_count: usize,
     download_options: DownloadOptions<'a>,
-    api: SourceAPI,
 ) -> Result<(), String> {
     let DownloadOptions {
         attempt_count,
-        proxy,
+        source_api,
         cache_file,
         image_format,
     } = download_options;
@@ -55,9 +53,8 @@ pub async fn download_image<'a>(
             &date_cached,
             job_id,
             total_count,
-            proxy,
+            source_api,
             cache_file,
-            api,
         )
         .await;
         match result {
@@ -86,20 +83,19 @@ pub async fn download_image<'a>(
     Ok(())
 }
 
-async fn fetch_image(
+async fn fetch_image<'a>(
     client: &Client,
     date_cached: &DateUrlCached,
     job_id: usize,
     total_count: usize,
-    proxy: Option<&str>,
+    source_api: SourceApi<'a>,
     cache_file: Option<&str>,
-    api: SourceAPI,
 ) -> Result<DynamicImage, String> {
     let image_url = match &date_cached.url {
         Some(url) => url.to_owned(),
         None => {
             print_step(date_cached.date, job_id, 1, total_count);
-            fetch_image_url_from_date(client, date_cached.date, proxy, api)
+            fetch_image_url_from_date(client, date_cached.date, source_api)
                 .await
                 .map_err(|error| format!("Fetching image url - {}", error))?
         }
@@ -121,13 +117,12 @@ async fn fetch_image(
     Ok(image)
 }
 
-async fn fetch_image_url_from_date(
+async fn fetch_image_url_from_date<'a>(
     client: &Client,
     date: NaiveDate,
-    proxy: Option<&str>,
-    api: SourceAPI,
+    source_api: SourceApi<'a>,
 ) -> Result<String, String> {
-    let url = proxy::webpage_proxied(date, proxy, api);
+    let url = source_api.get_page_url(date);
 
     let response = client
         .get(&url)
@@ -141,7 +136,7 @@ async fn fetch_image_url_from_date(
         format!("Converting webpage body for image URL to text ({url}) - {error}")
     })?;
 
-    let Some(image_url) = api.find_image_url(&response_body) else {
+    let Some(image_url) = source_api.source.find_image_url(&response_body) else {
         return Err(format!("Cannot find image URL in webpage body ({url})"));
     };
     println!("{}", image_url);
