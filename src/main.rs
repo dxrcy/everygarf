@@ -154,7 +154,7 @@ async fn main() {
 
     let elapsed_time = format_duration(Duration::from_secs(start_time.elapsed().as_secs()));
     let folder_size = get_dir_size(&folder)
-        .map(|size| format_bytes(size))
+        .map(format_bytes)
         .unwrap_or_else(|_| "???".into());
 
     println!();
