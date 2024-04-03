@@ -48,15 +48,7 @@ pub async fn download_image<'a>(
     let filepath = folder.join(filename);
 
     for attempt_no in 1..=attempt_count {
-        let result = fetch_image(
-            client,
-            &date_cached,
-            job_id,
-            total_count,
-            api,
-            cache_file,
-        )
-        .await;
+        let result = fetch_image(client, &date_cached, job_id, total_count, api, cache_file).await;
         match result {
             Ok(image) => {
                 if let Err(error) = image.save(filepath) {
