@@ -7,6 +7,9 @@ mod cache;
 mod download;
 mod io;
 
+#[cfg(test)]
+mod tests;
+
 use chrono::NaiveDate;
 use futures::{stream, StreamExt};
 use reqwest::{Client, StatusCode};
@@ -196,4 +199,28 @@ fn format_request_error(error: reqwest::Error) -> String {
     };
 
     format!("{YELLOW}{BOLD}{}{RESET} {}", code, message)
+}
+
+pub fn format_bytes(bytes: u64) -> String {
+    if bytes < 1000 {
+        return format!("{}B", bytes);
+    }
+
+    let mut bytes = bytes as f32 / 1000.0;
+    let mut magnitude = 0;
+
+    while bytes >= 1000.0 {
+        bytes /= 1000.0;
+        magnitude += 1;
+    }
+
+    let suffix = match magnitude {
+        0 => "kB",
+        1 => "MB",
+        2 => "GB",
+        3 => "TB",
+        _ => unimplemented!("This is too many bytes. Something else has clearly gone wrong."),
+    };
+
+    format!("{:.1}{}", bytes, suffix)
 }

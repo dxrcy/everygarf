@@ -28,7 +28,6 @@ minimize dependencies
         tokio/full
     manually implement simple crates
         humantime
-        human_bytes
     is this needed?
         bytes
         dirs-next

@@ -1,7 +1,6 @@
 mod args;
 
 use clap::Parser;
-use human_bytes::human_bytes;
 use humantime::format_duration;
 use std::{
     process,
@@ -10,7 +9,7 @@ use std::{
 
 use crate::args::Args;
 use everygarf::{
-    api::Api, colors::*, dates, errors, fatal_error, get_folder_path, DownloadOptions,
+    api::Api, colors::*, dates, errors, fatal_error, format_bytes, get_folder_path, DownloadOptions,
 };
 
 #[tokio::main]
@@ -155,7 +154,7 @@ async fn main() {
 
     let elapsed_time = format_duration(Duration::from_secs(start_time.elapsed().as_secs()));
     let folder_size = fs_extra::dir::get_size(folder)
-        .map(|size| human_bytes(size as f64))
+        .map(|size| format_bytes(size))
         .unwrap_or_else(|_| "???".into());
 
     println!();
