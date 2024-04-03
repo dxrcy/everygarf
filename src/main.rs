@@ -10,9 +10,7 @@ use std::{
 
 use crate::args::Args;
 use everygarf::{
-    api::{self, SourceApi},
-    colors::*,
-    dates, errors, fatal_error, get_folder_path, DownloadOptions,
+    api::SourceApi, colors::*, dates, errors, fatal_error, get_folder_path, DownloadOptions,
 };
 
 #[tokio::main]
@@ -101,7 +99,7 @@ async fn main() {
     };
 
     let source_api = SourceApi {
-        source: api::Source::Gocomics,
+        source: args.source,
         proxy: proxy.as_deref(),
     };
 

@@ -1,6 +1,7 @@
 alternative source apis
-    add argument: `--source`
     change type names ?
+    add to readme
+    add arg docs
 
 add tests :(
 
@@ -16,4 +17,7 @@ overhaul error handling
 
 readme
     make better
+
+linting
+    standardize `use` statement order
 

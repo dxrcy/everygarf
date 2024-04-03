@@ -1,4 +1,7 @@
+use std::fmt::Display;
+
 use chrono::{Datelike, NaiveDate};
+use clap::ValueEnum;
 use reqwest::Client;
 
 use crate::dates::{date_month_to_string, date_to_string};
@@ -9,7 +12,7 @@ pub struct SourceApi<'a> {
     pub proxy: Option<&'a str>,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, ValueEnum)]
 pub enum Source {
     Gocomics,
     Fandom,
@@ -27,6 +30,18 @@ impl<'a> SourceApi<'a> {
             None => url,
             Some(proxy) => proxy.to_string() + "?" + &url,
         }
+    }
+}
+
+impl Default for Source {
+    fn default() -> Self {
+        Self::Gocomics
+    }
+}
+
+impl Display for Source {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_possible_value().unwrap().get_name())
     }
 }
 
