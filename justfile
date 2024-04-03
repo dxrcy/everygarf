@@ -35,5 +35,8 @@ dist:
 
 # Publish to Crates.io
 publish:
+    printf "Publish to crates.io? (Y/n) " &&\
+    read -r r ;\
+    case "${r:-Y}" in [yY]|[yY][eE][sS]) ;; *) exit 0 ;; esac &&\
     cargo publish
 
