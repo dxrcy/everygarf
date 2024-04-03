@@ -16,6 +16,9 @@ overhaul error handling
     linting
         standardize `use` statement order
 
+refactor and clean up modules
+    too many items in `lib.rs`
+
 add tests
     unit test simple functions
     integration test
