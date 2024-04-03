@@ -3,12 +3,6 @@ alternative source apis
     add arg docs
     benchmark each source
 
-add tests :(
-
-add cli options
-    use tree file structure
-    choose file format (jpg)
-
 overhaul error handling
     use `thiserror`
     use enum, not string
@@ -22,4 +16,9 @@ readme
 
 linting
     standardize `use` statement order
+
+add tests :(
+
+add cli options
+    use tree file structure
 
