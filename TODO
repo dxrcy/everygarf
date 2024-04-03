@@ -26,8 +26,6 @@ feature: file tree structure
 minimize dependencies
     remove unnecessary features
         tokio/full
-    manually implement simple crates
-        humantime
     is this needed?
         bytes
         dirs-next

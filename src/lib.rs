@@ -224,3 +224,37 @@ pub fn format_bytes(bytes: u64) -> String {
 
     format!("{:.1}{}", bytes, suffix)
 }
+
+pub fn format_duration(duration: Duration) -> String {
+    let mut total = duration.as_secs();
+
+    let seconds = total % 60;
+    total /= 60;
+    let minutes = total % 60;
+    total /= 60;
+    let hours = total % 24;
+    total /= 24;
+    let days = total;
+
+    let mut output = String::new();
+    let values = [(days, "d"), (hours, "h"), (minutes, "m"), (seconds, "s")];
+
+    for (value, unit) in values {
+        if value == 0 {
+            continue;
+        }
+
+        if !output.is_empty() {
+            output.push(' ');
+        }
+
+        output += &value.to_string();
+        output += unit;
+    }
+
+    if output.is_empty() {
+        return "0s".to_string();
+    }
+
+    output
+}

@@ -1,7 +1,6 @@
 mod args;
 
 use clap::Parser;
-use humantime::format_duration;
 use std::{
     process,
     time::{Duration, Instant},
@@ -9,7 +8,8 @@ use std::{
 
 use crate::args::Args;
 use everygarf::{
-    api::Api, colors::*, dates, errors, fatal_error, format_bytes, get_folder_path, DownloadOptions,
+    api::Api, colors::*, dates, errors, fatal_error, format_bytes, format_duration,
+    get_folder_path, DownloadOptions,
 };
 
 #[tokio::main]

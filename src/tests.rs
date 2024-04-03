@@ -38,3 +38,36 @@ fn format_bytes_works() {
     assert_eq!(format_bytes(100_000_000_000_000), "100.0TB");
     assert_eq!(format_bytes(123_456_789_123_456), "123.5TB");
 }
+
+#[test]
+fn format_duration_works() {
+    assert_eq!(format_duration(Duration::from_secs(0)), "0s");
+    assert_eq!(format_duration(Duration::from_secs(1)), "1s");
+    assert_eq!(format_duration(Duration::from_secs(10)), "10s");
+    assert_eq!(format_duration(Duration::from_secs(59)), "59s");
+    assert_eq!(format_duration(Duration::from_secs(60)), "1m");
+    assert_eq!(format_duration(Duration::from_secs(61)), "1m 1s");
+    assert_eq!(format_duration(Duration::from_secs(119)), "1m 59s");
+    assert_eq!(format_duration(Duration::from_secs(120)), "2m");
+    assert_eq!(format_duration(Duration::from_secs(150)), "2m 30s");
+    assert_eq!(format_duration(Duration::from_secs(3_540)), "59m");
+    assert_eq!(format_duration(Duration::from_secs(3_541)), "59m 1s");
+    assert_eq!(format_duration(Duration::from_secs(3_599)), "59m 59s");
+    assert_eq!(format_duration(Duration::from_secs(3_600)), "1h");
+    assert_eq!(format_duration(Duration::from_secs(3_601)), "1h 1s");
+    assert_eq!(format_duration(Duration::from_secs(3_659)), "1h 59s");
+    assert_eq!(format_duration(Duration::from_secs(3_660)), "1h 1m");
+    assert_eq!(format_duration(Duration::from_secs(3_661)), "1h 1m 1s");
+    assert_eq!(format_duration(Duration::from_secs(7_140)), "1h 59m");
+    assert_eq!(format_duration(Duration::from_secs(7_199)), "1h 59m 59s");
+    assert_eq!(format_duration(Duration::from_secs(7_200)), "2h");
+    assert_eq!(format_duration(Duration::from_secs(7_201)), "2h 1s");
+    assert_eq!(format_duration(Duration::from_secs(82_800)), "23h");
+    assert_eq!(format_duration(Duration::from_secs(82_859)), "23h 59s");
+    assert_eq!(format_duration(Duration::from_secs(86_340)), "23h 59m");
+    assert_eq!(format_duration(Duration::from_secs(86_399)), "23h 59m 59s");
+    assert_eq!(format_duration(Duration::from_secs(86_400)), "1d");
+    assert_eq!(format_duration(Duration::from_secs(86_401)), "1d 1s");
+    assert_eq!(format_duration(Duration::from_secs(864_000)), "10d");
+    assert_eq!(format_duration(Duration::from_secs(8_643_600)), "100d 1h");
+}
