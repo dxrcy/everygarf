@@ -18,7 +18,7 @@ install-deps:
 # Test, format, and lint
 check:
     cargo test &&\
-    cargo fmt &&\
+    cargo fmt --check &&\
     cargo clippy
 
 # Cross compile to x86 Windows
