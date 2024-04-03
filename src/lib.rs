@@ -13,7 +13,7 @@ mod tests;
 use chrono::NaiveDate;
 use futures::{stream, StreamExt};
 use reqwest::{Client, StatusCode};
-use std::{path::Path, process, time::Duration};
+use std::{fs, path::Path, process, time::Duration};
 
 use crate::colors::*;
 use crate::dates::date_from_filename;
@@ -257,4 +257,23 @@ pub fn format_duration(duration: Duration) -> String {
     }
 
     output
+}
+
+pub fn get_dir_size(path: &Path) -> std::io::Result<u64> {
+    let mut total_size = 0;
+
+    let dir = fs::read_dir(path)?;
+    for child in dir.flatten() {
+        let path = child.path();
+
+        if path.is_dir() {
+            total_size += get_dir_size(path.as_path())?;
+            continue;
+        }
+
+        let metadata = fs::metadata(&path)?;
+        total_size += metadata.len();
+    }
+
+    Ok(total_size)
 }

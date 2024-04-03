@@ -23,11 +23,3 @@ add tests
 feature: file tree structure
     add cli option `--tree`
 
-minimize dependencies
-    remove unnecessary features
-        tokio/full
-    is this needed?
-        bytes
-        dirs-next
-        fs-extra
-
