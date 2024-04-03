@@ -9,16 +9,28 @@ overhaul error handling
         move error code into enum
     difference between cloudflare 429 vs other 429?
 
-document public items
+(chores)
+    document public items
+    readme
+        make better
+    linting
+        standardize `use` statement order
 
-readme
-    make better
+add tests
+    unit test simple functions
+    integration test
 
-linting
-    standardize `use` statement order
+feature: file tree structure
+    add cli option `--tree`
 
-add tests :(
-
-add cli options
-    use tree file structure
+minimize dependencies
+    remove unnecessary features
+        tokio/full
+    manually implement simple crates
+        humantime
+        human_bytes
+    is this needed?
+        bytes
+        dirs-next
+        fs-extra
 
