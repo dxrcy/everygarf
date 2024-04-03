@@ -4,7 +4,7 @@ use image::DynamicImage;
 use reqwest::Client;
 use std::path::Path;
 
-use crate::api::SourceApi;
+use crate::api::Api;
 use crate::cache;
 use crate::colors::*;
 use crate::dates::date_to_string;
@@ -38,7 +38,7 @@ pub async fn download_image<'a>(
 ) -> Result<(), String> {
     let DownloadOptions {
         attempt_count,
-        source_api,
+        api,
         cache_file,
         image_format,
     } = download_options;
@@ -53,7 +53,7 @@ pub async fn download_image<'a>(
             &date_cached,
             job_id,
             total_count,
-            source_api,
+            api,
             cache_file,
         )
         .await;
@@ -88,14 +88,14 @@ async fn fetch_image<'a>(
     date_cached: &DateUrlCached,
     job_id: usize,
     total_count: usize,
-    source_api: SourceApi<'a>,
+    api: Api<'a>,
     cache_file: Option<&str>,
 ) -> Result<DynamicImage, String> {
     let image_url = match &date_cached.url {
         Some(url) => url.to_owned(),
         None => {
             print_step(date_cached.date, job_id, 1, total_count);
-            fetch_image_url_from_date(client, date_cached.date, source_api)
+            fetch_image_url_from_date(client, date_cached.date, api)
                 .await
                 .map_err(|error| format!("Fetching image url - {}", error))?
         }
@@ -120,9 +120,9 @@ async fn fetch_image<'a>(
 async fn fetch_image_url_from_date<'a>(
     client: &Client,
     date: NaiveDate,
-    source_api: SourceApi<'a>,
+    api: Api<'a>,
 ) -> Result<String, String> {
-    let url = source_api.get_page_url(date);
+    let url = api.get_page_url(date);
 
     let response = client
         .get(&url)
@@ -136,7 +136,7 @@ async fn fetch_image_url_from_date<'a>(
         format!("Converting webpage body for image URL to text ({url}) - {error}")
     })?;
 
-    let Some(image_url) = source_api.source.find_image_url(&response_body) else {
+    let Some(image_url) = api.source.find_image_url(&response_body) else {
         return Err(format!("Cannot find image URL in webpage body ({url})"));
     };
     println!("{}", image_url);

@@ -10,7 +10,7 @@ use std::{
 
 use crate::args::Args;
 use everygarf::{
-    api::SourceApi, colors::*, dates, errors, fatal_error, get_folder_path, DownloadOptions,
+    api::Api, colors::*, dates, errors, fatal_error, get_folder_path, DownloadOptions,
 };
 
 #[tokio::main]
@@ -98,7 +98,7 @@ async fn main() {
         Some(args.cache)
     };
 
-    let source_api = SourceApi {
+    let api = Api {
         source: args.source,
         proxy: proxy.as_deref(),
     };
@@ -108,7 +108,7 @@ async fn main() {
 
     let download_options = DownloadOptions {
         attempt_count,
-        source_api,
+        api,
         cache_file: cache_file.as_deref(),
         image_format: image_format.as_str(),
     };

@@ -1,5 +1,4 @@
 alternative source apis
-    change type names ?
     add to readme
     add arg docs
     benchmark each source
@@ -15,6 +14,8 @@ overhaul error handling
     use enum, not string
         move error code into enum
     difference between cloudflare 429 vs other 429?
+
+document public items
 
 readme
     make better

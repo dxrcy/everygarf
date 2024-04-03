@@ -7,7 +7,7 @@ use reqwest::Client;
 use crate::dates::{date_month_to_string, date_to_string};
 
 #[derive(Clone, Copy, Debug)]
-pub struct SourceApi<'a> {
+pub struct Api<'a> {
     pub source: Source,
     pub proxy: Option<&'a str>,
 }
@@ -23,7 +23,7 @@ pub async fn check_proxy_service(client: &Client, proxy: &str) -> Result<(), req
     Ok(())
 }
 
-impl<'a> SourceApi<'a> {
+impl<'a> Api<'a> {
     pub fn get_page_url(&self, date: NaiveDate) -> String {
         let url = self.source.get_page_url(date);
         match self.proxy {
@@ -46,7 +46,8 @@ impl Display for Source {
 }
 
 impl Source {
-    pub fn get_page_url(&self, date: NaiveDate) -> String {
+    fn get_page_url(&self, date: NaiveDate) -> String {
+        // TODO: make consistent
         match &self {
             Self::Gocomics => {
                 let date_string = date_to_string(date, "/", false);
@@ -67,9 +68,9 @@ impl Source {
     }
 
     pub fn find_image_url<'a>(&self, body: &'a str) -> Option<&'a str> {
+        // TODO: make consistent
         match &self {
             Self::Gocomics => {
-                // make this consistent with Self::Fandom
                 let char_index = body.find("https://assets.amuniversal.com")?;
                 body.get(char_index..char_index + 63)
             }
