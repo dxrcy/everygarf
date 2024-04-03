@@ -131,7 +131,6 @@ async fn fetch_image_url_from_date<'a>(
     let Some(image_url) = api.source.find_image_url(&response_body) else {
         return Err(format!("Cannot find image URL in webpage body ({url})"));
     };
-    println!("{}", image_url);
 
     Ok(image_url.to_owned())
 }
