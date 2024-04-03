@@ -81,8 +81,6 @@ pub async fn download_all_images<'a>(
         }
     }
 
-    dbg!(source_api);
-
     let dates_cached: Vec<_> = match cache_url {
         Some(cache_url) => {
             if cache::is_remote_url(&cache_url) {
