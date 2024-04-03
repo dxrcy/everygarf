@@ -1,5 +1,4 @@
 alternative source apis
-    arg dependency: `--source` must be used with `--no-cache`
     add to readme
     add arg docs
     benchmark each source

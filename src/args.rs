@@ -70,13 +70,13 @@ pub struct Args {
     pub no_proxy: bool,
 
     /// Source for image URLs
-    #[arg(long, default_value_t = everygarf::api::Source::default())]
+    #[arg(long, requires = "no_cache", default_value_t = everygarf::api::Source::default())]
     pub source: everygarf::api::Source,
 
     /// Specify cache file to read from
     ///
     /// Disable cache with `no-cache`
-    #[arg(short, long, conflicts_with = "no_cache", default_value = everygarf::CACHE_DEFAULT)]
+    #[arg(short, long, default_value = everygarf::CACHE_DEFAULT, conflicts_with = "source")]
     pub cache: String,
 
     /// Do not read remote or local cache file
