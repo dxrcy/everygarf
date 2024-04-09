@@ -7,7 +7,6 @@ overhaul error handling
     difference between cloudflare 429 vs other 429?
     document variants
     rename variants
-    move query codes somewhere else
 
 (chores)
     document public items
@@ -18,6 +17,7 @@ overhaul error handling
 
 refactor and clean up modules
     too many items in `lib.rs`
+    make `use` statements consistent
 
 add tests
     unit test simple functions

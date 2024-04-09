@@ -28,5 +28,3 @@ pub enum Error {
     BadStartDate,
 }
 
-pub const QUERY_NONE: u8 = 0;
-pub const QUERY_SOME: u8 = 10;

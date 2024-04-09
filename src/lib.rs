@@ -28,6 +28,8 @@ pub const CACHE_DEFAULT: &str =
 
 const ISSUE_URL: &str = "https://github.com/dxrcy/everygarf/issues/new";
 
+pub const QUERY_SOME_EXITCODE: i32 = 10;
+
 static mut PROGRESS_COUNT: u32 = 0;
 
 pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {

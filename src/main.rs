@@ -8,7 +8,7 @@ use std::{
 
 use crate::args::Args;
 use everygarf::{
-    api::Api, colors::*, dates, errors, fatal_error, format_bytes, format_duration, get_dir_size,
+    api::Api, colors::*, dates, fatal_error, format_bytes, format_duration, get_dir_size,
     get_folder_path, DownloadOptions, Error,
 };
 
@@ -90,11 +90,12 @@ async fn main() {
 
     let total_download_count = missing_dates.len();
     if args.query {
-        if total_download_count > 0 {
-            process::exit(errors::QUERY_SOME as i32);
+        let code = if total_download_count > 0 {
+            everygarf::QUERY_SOME_EXITCODE
         } else {
-            process::exit(errors::QUERY_NONE as i32);
-        }
+            0
+        };
+        process::exit(code);
     }
     if let Some(max) = args.max {
         println!(
