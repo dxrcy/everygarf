@@ -7,7 +7,8 @@ overhaul error handling
     difference between cloudflare 429 vs other 429?
     document variants
     rename variants
-    use mpsc to send error to main?
+
+use mpsc to send error to main?
 
 (chores)
     document public items
