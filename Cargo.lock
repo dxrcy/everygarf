@@ -786,6 +786,7 @@ dependencies = [
  "image",
  "notify-rust",
  "reqwest",
+ "thiserror",
  "tokio",
 ]
 

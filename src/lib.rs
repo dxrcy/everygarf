@@ -1,14 +1,17 @@
+pub mod api;
 pub mod colors;
 pub mod dates;
 pub mod errors;
 
-pub mod api;
 mod cache;
 mod download;
 mod io;
 
 #[cfg(test)]
 mod tests;
+
+pub use crate::errors::Error;
+pub use crate::io::{create_target_dir, get_folder_path};
 
 use chrono::NaiveDate;
 use futures::{stream, StreamExt};
@@ -17,7 +20,6 @@ use std::{fs, path::Path, process, time::Duration};
 
 use crate::colors::*;
 use crate::dates::date_from_filename;
-pub use crate::io::{create_target_dir, get_folder_path};
 use crate::{api::Api, cache::DateUrlCached};
 
 pub const PROXY_DEFAULT: &str = "https://proxy.darcy-700.workers.dev/cors-proxy";
@@ -78,7 +80,7 @@ pub async fn download_all_images<'a>(
                 proxy,
                 format_request_error(error),
             );
-            fatal_error(errors::PROXY_PING, message, notify_fail);
+            fatal_error(Error::ProxyPing, message, notify_fail);
         }
     }
 
@@ -96,7 +98,7 @@ pub async fn download_all_images<'a>(
                         "{}\n{RESET}{DIM}Please try running with `--no-cache` argument, or create an issue at {ISSUE_URL}{RESET}",
                         error,
                     );
-                    fatal_error(errors::CACHE_DOWNLOAD, message, notify_fail)
+                    fatal_error(Error::CacheDownload, message, notify_fail)
                 }
             };
             dates
@@ -140,7 +142,7 @@ pub async fn download_all_images<'a>(
     bodies
         .for_each(|result| async {
             if let Err(error) = result {
-                fatal_error(errors::DOWNLOAD_FAIL, error, notify_fail);
+                fatal_error(Error::DownloadFail, error, notify_fail);
             }
         })
         .await;
@@ -148,7 +150,7 @@ pub async fn download_all_images<'a>(
     if let Some(cache_file) = cache_file {
         if let Err(error) = cache::clean_cache_file(cache_file) {
             fatal_error(
-                errors::CLEAN_CACHE,
+                Error::CleanCache,
                 format!("Failed to clean cache file - {}", error),
                 notify_fail,
             );
@@ -156,7 +158,7 @@ pub async fn download_all_images<'a>(
     }
 }
 
-pub fn fatal_error(code: u8, message: String, notify: bool) -> ! {
+pub fn fatal_error(code: Error, message: String, notify: bool) -> ! {
     eprintln!("{RED}=============[ERROR]============={RESET}");
     eprintln!("{YELLOW}{}", message);
     eprintln!("{RED}================================={RESET}");

@@ -4,10 +4,10 @@ alternative source apis
     benchmark each source
 
 overhaul error handling
-    use `thiserror`
-    use enum, not string
-        move error code into enum
     difference between cloudflare 429 vs other 429?
+    document variants
+    rename variants
+    move query codes somewhere else
 
 (chores)
     document public items
