@@ -9,7 +9,7 @@ use std::{
 use crate::args::Args;
 use everygarf::{
     api::Api, colors::*, dates, fatal_error, format_bytes, format_duration, get_dir_size,
-    get_folder_path, DownloadOptions, Error,
+    get_folder_path, ApiOptions, DownloadOptions, Error,
 };
 
 #[tokio::main]
@@ -127,6 +127,7 @@ async fn main() {
 
     let cache_file = args.save_cache;
     let image_format = args.format.to_string();
+    let always_ping = args.always_ping;
 
     let download_options = DownloadOptions {
         attempt_count,
@@ -135,23 +136,25 @@ async fn main() {
         image_format: image_format.as_str(),
     };
 
+    let api_options = ApiOptions {
+        folder: &folder,
+        dates: &missing_dates,
+        job_count,
+        timeout_main: timeout,
+        timeout_initial,
+        notify_on_fail,
+        cache_url,
+        always_ping,
+        download_options,
+    };
+
     if real_download_count > 0 {
         println!(
             "Downloading {BOLD}{}{RESET} images using (up to) {BOLD}{}{RESET} concurrent jobs...{RESET}",
             missing_dates.len(),
             job_count,
         );
-        everygarf::download_all_images(
-            &folder,
-            &missing_dates,
-            job_count,
-            [timeout, timeout_initial],
-            notify_on_fail,
-            cache_url,
-            download_options,
-            args.always_ping,
-        )
-        .await;
+        everygarf::download_all_images(api_options).await;
     }
 
     let elapsed_time = format_duration(Duration::from_secs(start_time.elapsed().as_secs()));

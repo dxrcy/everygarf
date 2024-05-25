@@ -41,6 +41,18 @@ pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {
         .collect())
 }
 
+pub struct ApiOptions<'a, 'b, 'c> {
+    pub download_options: DownloadOptions<'a>,
+    pub folder: &'b Path,
+    pub dates: &'c [NaiveDate],
+    pub job_count: usize,
+    pub cache_url: Option<String>,
+    pub always_ping: bool,
+    pub timeout_main: Duration,
+    pub timeout_initial: Duration,
+    pub notify_on_fail: bool,
+}
+
 #[derive(Clone, Copy)]
 pub struct DownloadOptions<'a> {
     pub attempt_count: u32,
@@ -50,14 +62,17 @@ pub struct DownloadOptions<'a> {
 }
 
 pub async fn download_all_images<'a>(
-    folder: &Path,
-    dates: &[NaiveDate],
-    job_count: usize,
-    [timeout_main, timeout_initial]: [Duration; 2],
-    notify_on_fail: bool,
-    cache_url: Option<String>,
-    download_options: DownloadOptions<'a>,
-    always_ping: bool,
+    ApiOptions {
+        download_options,
+        folder,
+        dates,
+        job_count,
+        cache_url,
+        always_ping,
+        timeout_main,
+        timeout_initial,
+        notify_on_fail,
+    }: ApiOptions<'a, '_, '_>,
 ) {
     let DownloadOptions {
         api, cache_file, ..
