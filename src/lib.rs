@@ -32,6 +32,8 @@ pub const QUERY_SOME_EXITCODE: i32 = 10;
 
 const MIN_COUNT_FOR_PING: usize = 10;
 
+const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36";
+
 static mut PROGRESS_COUNT: u32 = 0;
 
 pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {
@@ -39,6 +41,14 @@ pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {
         .map_err(|err| format!("read directory - {:#?}", err))?
         .filter_map(|filename| date_from_filename(filename.to_str()?))
         .collect())
+}
+
+#[derive(Clone, Copy)]
+pub struct DownloadOptions<'a> {
+    pub attempt_count: u32,
+    pub api: Api<'a>,
+    pub cache_file: Option<&'a str>,
+    pub image_format: &'a str,
 }
 
 pub struct ApiOptions<'a, 'b, 'c> {
@@ -53,131 +63,113 @@ pub struct ApiOptions<'a, 'b, 'c> {
     pub notify_on_fail: bool,
 }
 
-#[derive(Clone, Copy)]
-pub struct DownloadOptions<'a> {
-    pub attempt_count: u32,
-    pub api: Api<'a>,
-    pub cache_file: Option<&'a str>,
-    pub image_format: &'a str,
-}
+impl<'a> ApiOptions<'a, '_, '_> {
+    pub async fn download_all_images(self) {
+        let DownloadOptions {
+            api, cache_file, ..
+        } = self.download_options;
 
-pub async fn download_all_images<'a>(
-    ApiOptions {
-        download_options,
-        folder,
-        dates,
-        job_count,
-        cache_url,
-        always_ping,
-        timeout_main,
-        timeout_initial,
-        notify_on_fail,
-    }: ApiOptions<'a, '_, '_>,
-) {
-    let DownloadOptions {
-        api, cache_file, ..
-    } = download_options;
+        let client_initial = Client::builder()
+            .user_agent(USER_AGENT)
+            .timeout(self.timeout_initial)
+            .build()
+            .expect("Failed to build request client (initial). This error should never occur.");
 
-    const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36";
+        let client_main = Client::builder()
+            .user_agent(USER_AGENT)
+            .timeout(self.timeout_main)
+            .build()
+            .expect("Failed to build request client (main). This error should never occur.");
 
-    let client_initial = Client::builder()
-        .user_agent(USER_AGENT)
-        .timeout(timeout_initial)
-        .build()
-        .expect("Failed to build request client (initial). This error should never occur.");
-
-    let client_main = Client::builder()
-        .user_agent(USER_AGENT)
-        .timeout(timeout_main)
-        .build()
-        .expect("Failed to build request client (main). This error should never occur.");
-
-    if let Some(proxy) = api.proxy {
-        if !always_ping && dates.len() < MIN_COUNT_FOR_PING {
-            println!("    {DIM}(Skipping proxy ping){RESET}");
-        } else {
-            println!("    {DIM}Pinging proxy server...{RESET}");
-            if let Err(error) = api::check_proxy_service(&client_initial, proxy).await {
-                let message = format!(
+        if let Some(proxy) = api.proxy {
+            if !self.always_ping && self.dates.len() < MIN_COUNT_FOR_PING {
+                println!("    {DIM}(Skipping proxy ping){RESET}");
+            } else {
+                println!("    {DIM}Pinging proxy server...{RESET}");
+                if let Err(error) = api::check_proxy_service(&client_initial, proxy).await {
+                    let message = format!(
                 "{RED}{BOLD}Proxy service unavailable{RESET} - {}.\n{DIM}Trying to ping {UNDERLINE}{}{RESET}\nPlease try later, or create an issue at {ISSUE_URL}",
                 proxy,
                 format_request_error(error),
             );
-                fatal_error(Error::ProxyPing, message, notify_on_fail);
+                    fatal_error(Error::ProxyPing, message, self.notify_on_fail);
+                }
             }
         }
-    }
 
-    let dates_cached: Vec<_> = match cache_url {
-        Some(cache_url) => {
-            if cache::is_remote_url(&cache_url) {
-                println!("    {DIM}Downloading cached URLs...{RESET}");
-            } else {
-                println!("    {DIM}Reading cached URLs...{RESET}");
-            }
-            let cached_dates = match cache::fetch_cached_urls(&client_initial, &cache_url).await {
-                Ok(dates) => dates,
-                Err(error) => {
-                    let message = format!(
+        let dates_cached: Vec<_> = match self.cache_url {
+            Some(cache_url) => {
+                if cache::is_remote_url(&cache_url) {
+                    println!("    {DIM}Downloading cached URLs...{RESET}");
+                } else {
+                    println!("    {DIM}Reading cached URLs...{RESET}");
+                }
+                let cached_dates = match cache::fetch_cached_urls(&client_initial, &cache_url).await
+                {
+                    Ok(dates) => dates,
+                    Err(error) => {
+                        let message = format!(
                         "{}\n{RESET}{DIM}Please try running with `--no-cache` argument, or create an issue at {ISSUE_URL}{RESET}",
                         error,
                     );
-                    fatal_error(Error::CacheDownload, message, notify_on_fail)
-                }
-            };
-            dates
+                        fatal_error(Error::CacheDownload, message, self.notify_on_fail)
+                    }
+                };
+                self.dates
+                    .iter()
+                    .map(|date| DateUrlCached {
+                        date: *date,
+                        url: cached_dates.get(date).cloned(),
+                    })
+                    .collect()
+            }
+            None => self
+                .dates
                 .iter()
                 .map(|date| DateUrlCached {
                     date: *date,
-                    url: cached_dates.get(date).cloned(),
+                    url: None,
                 })
-                .collect()
-        }
-        None => dates
-            .iter()
-            .map(|date| DateUrlCached {
-                date: *date,
-                url: None,
+                .collect(),
+        };
+
+        unsafe { PROGRESS_COUNT = 0 }
+
+        let bodies = stream::iter(dates_cached.iter().enumerate())
+            .map(|(i, date_cached)| {
+                let job_id = i % self.job_count;
+                let client = &client_main;
+                let progress = dates_cached.len();
+                async move {
+                    download::download_image(
+                        client,
+                        date_cached.clone(),
+                        self.folder,
+                        job_id,
+                        progress,
+                        self.download_options,
+                    )
+                    .await
+                }
             })
-            .collect(),
-    };
+            .buffered(self.job_count);
 
-    unsafe { PROGRESS_COUNT = 0 }
+        bodies
+            .for_each(|result| async {
+                if let Err(error) = result {
+                    fatal_error(Error::DownloadFail, error, self.notify_on_fail);
+                }
+            })
+            .await;
 
-    let bodies = stream::iter(dates_cached.iter().enumerate())
-        .map(|(i, date_cached)| {
-            let job_id = i % job_count;
-            let client = &client_main;
-            let progress = dates_cached.len();
-            async move {
-                download::download_image(
-                    client,
-                    date_cached.clone(),
-                    folder,
-                    job_id,
-                    progress,
-                    download_options,
-                )
-                .await
+        if let Some(cache_file) = cache_file {
+            if let Err(error) = cache::clean_cache_file(cache_file) {
+                fatal_error(
+                    Error::CleanCache,
+                    format!("Failed to clean cache file - {}", error),
+                    self.notify_on_fail,
+                );
             }
-        })
-        .buffered(job_count);
-
-    bodies
-        .for_each(|result| async {
-            if let Err(error) = result {
-                fatal_error(Error::DownloadFail, error, notify_on_fail);
-            }
-        })
-        .await;
-
-    if let Some(cache_file) = cache_file {
-        if let Err(error) = cache::clean_cache_file(cache_file) {
-            fatal_error(
-                Error::CleanCache,
-                format!("Failed to clean cache file - {}", error),
-                notify_on_fail,
-            );
         }
     }
 }

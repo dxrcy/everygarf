@@ -154,7 +154,7 @@ async fn main() {
             missing_dates.len(),
             job_count,
         );
-        everygarf::download_all_images(api_options).await;
+        api_options.download_all_images().await;
     }
 
     let elapsed_time = format_duration(Duration::from_secs(start_time.elapsed().as_secs()));
