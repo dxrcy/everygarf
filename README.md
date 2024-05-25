@@ -119,7 +119,7 @@ echo "\
 [Unit]
 Description=Timer for EveryGarf service
 [Timer]
-OnBootSec=2min
+OnBootSec=5min
 OnUnitActiveSec=3h
 Unit=everygarf.service
 [Install]
