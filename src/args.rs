@@ -15,6 +15,13 @@ pub struct Args {
     /// Leave blank to use 'garfield' folder in user pictures directory (~/Pictures/garfield)
     pub folder: Option<String>,
 
+
+    /// Save images in tree structure
+    ///
+    /// `YYYY/MM/DD.png` instead of `YYYY-MM-DD.png`
+    #[arg(long)]
+    pub tree: bool,
+
     /// Maximum number of images to download
     ///
     /// Use `--max 0` to download no images, only check status

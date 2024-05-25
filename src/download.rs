@@ -1,8 +1,9 @@
 use bytes::Bytes;
-use chrono::NaiveDate;
+use chrono::{Datelike, NaiveDate};
 use image::DynamicImage;
 use reqwest::Client;
 use std::path::Path;
+use std::path::PathBuf;
 
 use crate::api::Api;
 use crate::cache;
@@ -41,37 +42,73 @@ pub async fn download_image<'a>(
         api,
         cache_file,
         image_format,
+        save_as_tree,
     } = download_options;
+    let date = date_cached.date;
 
-    let filename = date_to_string(date_cached.date, "-", true) + "." + image_format;
-    let filename = Path::new(&filename);
-    let filepath = folder.join(filename);
+    let filepath = if save_as_tree {
+        match create_month_dir(folder, date) {
+            Ok(month_dir) => {
+                let day = pad_two_digits(date.day()) + "." + image_format;
+                month_dir.join(day)
+            }
+            Err(error) => {
+                return Err(format!(
+                    "{} Failed to create parent directory - {error}",
+                    date_cached.date,
+                ))
+            }
+        }
+    } else {
+        let filename = date_to_string(date, "-", true) + "." + image_format;
+        folder.join(filename)
+    };
 
     for attempt_no in 1..=attempt_count {
         let result = fetch_image(client, &date_cached, job_id, total_count, api, cache_file).await;
         match result {
             Ok(image) => {
                 if let Err(error) = image.save(filepath) {
-                    return Err(format!(
-                        "{} Failed to save image file - {error}",
-                        date_cached.date,
-                    ));
+                    return Err(format!("{} Failed to save image file - {error}", date,));
                 }
                 unsafe { PROGRESS_COUNT += 1 }
                 break;
             }
             Err(error) => {
-                eprintln!("{YELLOW}[warning] {DIM}[Attempt {attempt_no}]{RESET} {BOLD}{}{RESET} {DIM}#{job_id}{RESET} Failed: {error}", date_cached.date);
+                eprintln!("{YELLOW}[warning] {DIM}[Attempt {attempt_no}]{RESET} {BOLD}{}{RESET} {DIM}#{job_id}{RESET} Failed: {error}", date);
                 if attempt_no >= attempt_count {
                     return Err(format!(
                         "{RESET}{BOLD}{}{RESET} Failed after {BOLD}{attempt_count}{RESET} attempts: {error}",
-                        date_cached.date,
+                        date,
                     ));
                 }
             }
         }
     }
 
+    Ok(())
+}
+
+fn create_month_dir(parent: &Path, date: NaiveDate) -> std::io::Result<PathBuf> {
+    let year = parent.join(pad_two_digits(date.year() as u32));
+    create_dir_if_not_exists(&year)?;
+    let month = year.join(pad_two_digits(date.month()));
+    create_dir_if_not_exists(&month)?;
+    Ok(month)
+}
+
+fn pad_two_digits(number: u32) -> String {
+    if number < 10 {
+        "0".to_owned() + &number.to_string()
+    } else {
+        number.to_string()
+    }
+}
+
+fn create_dir_if_not_exists(path: &Path) -> std::io::Result<()> {
+    if !path.exists() {
+        std::fs::create_dir_all(path)?;
+    }
     Ok(())
 }
 

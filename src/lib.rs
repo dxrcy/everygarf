@@ -64,6 +64,7 @@ pub struct SingleDownloadOptions<'a> {
     pub api: Api<'a>,
     pub cache_file: Option<&'a str>,
     pub image_format: &'a str,
+    pub save_as_tree: bool,
 }
 
 impl<'a> Downloader<'a, '_, '_> {

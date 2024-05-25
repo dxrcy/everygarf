@@ -134,6 +134,7 @@ async fn main() {
         api,
         cache_file: cache_file.as_deref(),
         image_format: image_format.as_str(),
+        save_as_tree: args.tree,
     };
 
     let downloader = Downloader {
