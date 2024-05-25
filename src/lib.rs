@@ -30,6 +30,8 @@ const ISSUE_URL: &str = "https://github.com/dxrcy/everygarf/issues/new";
 
 pub const QUERY_SOME_EXITCODE: i32 = 10;
 
+const MIN_COUNT_FOR_PING: usize = 10;
+
 static mut PROGRESS_COUNT: u32 = 0;
 
 pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {
@@ -55,6 +57,7 @@ pub async fn download_all_images<'a>(
     notify_fail: bool,
     cache_url: Option<String>,
     download_options: DownloadOptions<'a>,
+    always_ping: bool,
 ) {
     let DownloadOptions {
         api, cache_file, ..
@@ -75,14 +78,18 @@ pub async fn download_all_images<'a>(
         .expect("Failed to build request client (main). This error should never occur.");
 
     if let Some(proxy) = api.proxy {
-        println!("    {DIM}Pinging proxy server...{RESET}");
-        if let Err(error) = api::check_proxy_service(&client_initial, proxy).await {
-            let message = format!(
+        if !always_ping && dates.len() < MIN_COUNT_FOR_PING {
+            println!("    {DIM}(Skipping proxy ping){RESET}");
+        } else {
+            println!("    {DIM}Pinging proxy server...{RESET}");
+            if let Err(error) = api::check_proxy_service(&client_initial, proxy).await {
+                let message = format!(
                 "{RED}{BOLD}Proxy service unavailable{RESET} - {}.\n{DIM}Trying to ping {UNDERLINE}{}{RESET}\nPlease try later, or create an issue at {ISSUE_URL}",
                 proxy,
                 format_request_error(error),
             );
-            fatal_error(Error::ProxyPing, message, notify_fail);
+                fatal_error(Error::ProxyPing, message, notify_fail);
+            }
         }
     }
 

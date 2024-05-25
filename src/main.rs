@@ -149,6 +149,7 @@ async fn main() {
             notify_fail,
             cache_url,
             download_options,
+            args.always_ping,
         )
         .await;
     }

@@ -69,6 +69,10 @@ pub struct Args {
     #[arg(long, conflicts_with = "proxy")]
     pub no_proxy: bool,
 
+    /// Always ping proxy service, even when downloading few images
+    #[arg(long)]
+    pub always_ping: bool,
+
     /// Source for image URLs
     #[arg(long, requires = "no_cache", default_value_t = everygarf::api::Source::default())]
     pub source: everygarf::api::Source,
