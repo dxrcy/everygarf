@@ -24,10 +24,10 @@ async fn main() {
     }
 
     let start_time = Instant::now();
-    let notify_fail = args.notify_fail;
+    let notify_on_fail = args.notify_on_fail;
 
     let folder = get_folder_path(args.folder.as_deref())
-        .unwrap_or_else(|error| fatal_error(Error::NoDir, error, notify_fail));
+        .unwrap_or_else(|error| fatal_error(Error::NoDir, error, notify_on_fail));
     let folder_string = folder.to_string_lossy();
 
     let start_date = args.start_from.unwrap_or(dates::first());
@@ -55,7 +55,7 @@ async fn main() {
                 folder_string, error,
             )
         })
-        .unwrap_or_else(|error| fatal_error(Error::CreateDir, error, notify_fail));
+        .unwrap_or_else(|error| fatal_error(Error::CreateDir, error, notify_on_fail));
 
     let (first_date, today_date) = (dates::first(), dates::today());
     if start_date < first_date {
@@ -65,7 +65,7 @@ async fn main() {
                 "Start date must not be before date of first comic ({})",
                 first_date,
             ),
-            notify_fail,
+            notify_on_fail,
         );
     }
     if start_date > today_date {
@@ -75,13 +75,13 @@ async fn main() {
                 "Start date must not be after today's date (UTC - {})",
                 today_date,
             ),
-            notify_fail,
+            notify_on_fail,
         );
     }
 
     let all_dates = dates::get_dates_between(start_date, dates::latest());
     let existing_dates = everygarf::get_existing_dates(&folder)
-        .unwrap_or_else(|error| fatal_error(Error::ReadExistingDates, error, notify_fail));
+        .unwrap_or_else(|error| fatal_error(Error::ReadExistingDates, error, notify_on_fail));
 
     let mut missing_dates: Vec<_> = all_dates
         .into_iter()
@@ -146,7 +146,7 @@ async fn main() {
             &missing_dates,
             job_count,
             [timeout, timeout_initial],
-            notify_fail,
+            notify_on_fail,
             cache_url,
             download_options,
             args.always_ping,

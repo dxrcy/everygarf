@@ -39,7 +39,7 @@ everygarf --help
 everygarf
 
 # Change some options
-everygarf ~/Pictures/garfield --remove-all --notify-fail --attempts 20 --timeout 30 --jobs 40 --max 300
+everygarf ~/Pictures/garfield --remove-all --notify-on-fail --attempts 20 --timeout 30 --jobs 40 --max 300
 
 # Check if any images are missing
 everygarf --query && echo 'Up to date!'
@@ -109,7 +109,7 @@ echo "\
 [Unit]
 Description=Run EveryGarf program to download Garfield comics
 [Service]
-ExecStart=$HOME/.cargo/bin/everygarf --jobs 10 --max 50 --notify-fail
+ExecStart=$HOME/.cargo/bin/everygarf --jobs 10 --max 50 --notify-on-fail
 [Install]
 WantedBy=everygarf.timer\
 " > everygarf.service

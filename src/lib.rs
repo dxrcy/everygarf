@@ -54,7 +54,7 @@ pub async fn download_all_images<'a>(
     dates: &[NaiveDate],
     job_count: usize,
     [timeout_main, timeout_initial]: [Duration; 2],
-    notify_fail: bool,
+    notify_on_fail: bool,
     cache_url: Option<String>,
     download_options: DownloadOptions<'a>,
     always_ping: bool,
@@ -88,7 +88,7 @@ pub async fn download_all_images<'a>(
                 proxy,
                 format_request_error(error),
             );
-                fatal_error(Error::ProxyPing, message, notify_fail);
+                fatal_error(Error::ProxyPing, message, notify_on_fail);
             }
         }
     }
@@ -107,7 +107,7 @@ pub async fn download_all_images<'a>(
                         "{}\n{RESET}{DIM}Please try running with `--no-cache` argument, or create an issue at {ISSUE_URL}{RESET}",
                         error,
                     );
-                    fatal_error(Error::CacheDownload, message, notify_fail)
+                    fatal_error(Error::CacheDownload, message, notify_on_fail)
                 }
             };
             dates
@@ -151,7 +151,7 @@ pub async fn download_all_images<'a>(
     bodies
         .for_each(|result| async {
             if let Err(error) = result {
-                fatal_error(Error::DownloadFail, error, notify_fail);
+                fatal_error(Error::DownloadFail, error, notify_on_fail);
             }
         })
         .await;
@@ -161,7 +161,7 @@ pub async fn download_all_images<'a>(
             fatal_error(
                 Error::CleanCache,
                 format!("Failed to clean cache file - {}", error),
-                notify_fail,
+                notify_on_fail,
             );
         }
     }

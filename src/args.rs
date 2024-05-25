@@ -49,7 +49,7 @@ pub struct Args {
     ///
     /// Useful when running in background
     #[arg(short, long)]
-    pub notify_fail: bool,
+    pub notify_on_fail: bool,
 
     /// Remove existing files / clean save folder (not recommended)
     ///

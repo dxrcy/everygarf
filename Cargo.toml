@@ -1,6 +1,6 @@
 [package]
 name = "everygarf"
-version = "2.6.1"
+version = "2.7.0"
 edition = "2021"
 authors = ["darcy"]
 description = "Concurrently download every Garfield comic to date"
