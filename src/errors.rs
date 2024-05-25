@@ -27,4 +27,3 @@ pub enum Error {
     #[error("..")]
     BadStartDate,
 }
-

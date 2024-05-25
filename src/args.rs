@@ -15,7 +15,6 @@ pub struct Args {
     /// Leave blank to use 'garfield' folder in user pictures directory (~/Pictures/garfield)
     pub folder: Option<String>,
 
-
     /// Save images in tree structure
     ///
     /// `YYYY/MM/DD.png` instead of `YYYY-MM-DD.png`

@@ -9,7 +9,7 @@ use std::{
 use crate::args::Args;
 use everygarf::{
     api::Api, colors::*, dates, fatal_error, format_bytes, format_duration, get_dir_size,
-    get_folder_path, Downloader, SingleDownloadOptions, Error,
+    get_folder_path, Downloader, Error, SingleDownloadOptions,
 };
 
 #[tokio::main]
