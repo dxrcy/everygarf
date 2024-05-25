@@ -10,7 +10,7 @@ use crate::colors::*;
 use crate::dates::date_to_string;
 use crate::format_request_error;
 use crate::DateUrlCached;
-use crate::DownloadOptions;
+use crate::SingleDownloadOptions;
 use crate::PROGRESS_COUNT;
 
 fn print_step(date: NaiveDate, job_id: usize, step: u32, total_count: usize) {
@@ -34,9 +34,9 @@ pub async fn download_image<'a>(
     folder: &Path,
     job_id: usize,
     total_count: usize,
-    download_options: DownloadOptions<'a>,
+    download_options: SingleDownloadOptions<'a>,
 ) -> Result<(), String> {
-    let DownloadOptions {
+    let SingleDownloadOptions {
         attempt_count,
         api,
         cache_file,

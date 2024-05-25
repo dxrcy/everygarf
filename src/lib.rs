@@ -43,16 +43,10 @@ pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {
         .collect())
 }
 
-#[derive(Clone, Copy)]
-pub struct DownloadOptions<'a> {
-    pub attempt_count: u32,
-    pub api: Api<'a>,
-    pub cache_file: Option<&'a str>,
-    pub image_format: &'a str,
-}
-
-pub struct ApiOptions<'a, 'b, 'c> {
-    pub download_options: DownloadOptions<'a>,
+/// All configuration for downloading images concurrently, including [SingleDownloadOptions]
+// These lifetimes may be incorrect...
+pub struct Downloader<'a, 'b, 'c> {
+    pub single_download_options: SingleDownloadOptions<'a>,
     pub folder: &'b Path,
     pub dates: &'c [NaiveDate],
     pub job_count: usize,
@@ -63,11 +57,20 @@ pub struct ApiOptions<'a, 'b, 'c> {
     pub notify_on_fail: bool,
 }
 
-impl<'a> ApiOptions<'a, '_, '_> {
+/// Options which are passed to [download::download_image], for downloading a single image
+#[derive(Clone, Copy)]
+pub struct SingleDownloadOptions<'a> {
+    pub attempt_count: u32,
+    pub api: Api<'a>,
+    pub cache_file: Option<&'a str>,
+    pub image_format: &'a str,
+}
+
+impl<'a> Downloader<'a, '_, '_> {
     pub async fn download_all_images(self) {
-        let DownloadOptions {
+        let SingleDownloadOptions {
             api, cache_file, ..
-        } = self.download_options;
+        } = self.single_download_options;
 
         let client_initial = Client::builder()
             .user_agent(USER_AGENT)
@@ -147,7 +150,7 @@ impl<'a> ApiOptions<'a, '_, '_> {
                         self.folder,
                         job_id,
                         progress,
-                        self.download_options,
+                        self.single_download_options,
                     )
                     .await
                 }
