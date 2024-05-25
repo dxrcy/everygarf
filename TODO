@@ -16,10 +16,8 @@ use mpsc to send error to main?
         make better
     linting
         standardize `use` statement order
-
-refactor and clean up modules
-    too many items in `lib.rs`
-    make `use` statements consistent
+    refactor and clean up modules
+        too many items in `lib.rs`
 
 add tests
     unit test simple functions
@@ -27,4 +25,7 @@ add tests
 
 feature: file tree structure
     add cli option `--tree`
+
+perf: save raw bytes to file, instead of converting to image, when saving as .gif
+    this might be a little annoying to change
 
