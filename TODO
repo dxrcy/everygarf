@@ -3,10 +3,6 @@ alternative source apis
     add arg docs
     benchmark each source
 
-dont do initial ping for small image count
-    default: if <10 images, dont ping
-    override with --always-ping or something
-
 overhaul error handling
     difference between cloudflare 429 vs other 429?
     document variants
