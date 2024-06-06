@@ -66,13 +66,13 @@ pub struct Args {
     /// Url of custom proxy service
     ///
     /// See [https://github.com/dxrcy/everygarf#proxy-service] for more information
-    #[arg(long, conflicts_with = "no_proxy", default_value = everygarf::PROXY_DEFAULT)]
+    #[arg(short, long, conflicts_with = "no_proxy", default_value = everygarf::PROXY_DEFAULT)]
     pub proxy: String,
 
     /// Do not use a proxy service (not recommended)
     ///
     /// See [https://github.com/dxrcy/everygarf#proxy-service] for more information
-    #[arg(long, conflicts_with = "proxy")]
+    #[arg(short = 'P', long, conflicts_with = "proxy")]
     pub no_proxy: bool,
 
     /// Always ping proxy service, even when downloading few images
@@ -80,7 +80,7 @@ pub struct Args {
     pub always_ping: bool,
 
     /// Source for image URLs
-    #[arg(long, requires = "no_cache", default_value_t = everygarf::api::Source::default())]
+    #[arg(short = 'S', long, requires = "no_cache", default_value_t = everygarf::api::Source::default())]
     pub source: everygarf::api::Source,
 
     /// Specify cache file to read from
@@ -90,7 +90,7 @@ pub struct Args {
     pub cache: String,
 
     /// Do not read remote or local cache file
-    #[arg(long, conflicts_with = "cache")]
+    #[arg(short = 'C', long, conflicts_with = "cache")]
     pub no_cache: bool,
 
     /// Save image URLs to local cache file
