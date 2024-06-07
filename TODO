@@ -26,3 +26,6 @@ add tests
 perf: save raw bytes to file, instead of converting to image, when saving as .gif
     this might be a little annoying to change
 
+refactor: does `date_to_string` need `leading_zeros` parameter?
+    can be removed if gocomics accepts leading zeros
+
