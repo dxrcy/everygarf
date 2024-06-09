@@ -46,7 +46,6 @@ impl Display for Source {
 
 impl Source {
     fn get_page_url(&self, date: NaiveDate) -> String {
-        // TODO: make consistent
         match &self {
             Self::Gocomics => {
                 let date_string = date_to_string(date, "/", false);
@@ -56,7 +55,6 @@ impl Source {
     }
 
     pub fn find_image_url<'a>(&self, body: &'a str) -> Option<&'a str> {
-        // TODO: make consistent
         match &self {
             Self::Gocomics => {
                 let char_index = body.find("https://assets.amuniversal.com")?;
