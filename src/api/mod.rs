@@ -1,10 +1,12 @@
+mod fandom;
+
 use std::fmt::Display;
 
-use chrono::{Datelike, NaiveDate};
+use chrono::NaiveDate;
 use clap::ValueEnum;
 use reqwest::Client;
 
-use crate::dates::{date_month_to_string, date_to_string};
+use crate::dates::date_to_string;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Api<'a> {
@@ -50,18 +52,16 @@ impl Source {
         // TODO: make consistent
         match &self {
             Self::Gocomics => {
-                let date_string = date_to_string(date, "/", false);
-                format!("https://www.gocomics.com/garfield/{}", date_string)
+                format!(
+                    "https://www.gocomics.com/garfield/{}",
+                    date_to_string(date, "/", false)
+                )
             }
 
             Self::Fandom => {
-                let month_string = date_month_to_string(date);
-                let date_string = date_to_string(date, "-", false);
                 format!(
-                    "https://garfield.fandom.com/wiki/Garfield,_{month}_{year}_comic_strips?file={date}.gif",
-                    month = month_string,
-                    year = date.year(),
-                    date = date_string,
+                    "https://garfield.fandom.com/wikia.php?controller=Lightbox&method=getMediaDetail&fileTitle={}",
+                    fandom::get_file_title(date),
                 )
             }
         }
@@ -69,18 +69,18 @@ impl Source {
 
     pub fn find_image_url<'a>(&self, body: &'a str) -> Option<&'a str> {
         // TODO: make consistent
-        match &self {
+        let url = match &self {
             Self::Gocomics => {
                 let char_index = body.find("https://assets.amuniversal.com")?;
                 body.get(char_index..char_index + 63)
             }
 
             Self::Fandom => {
-                const IMAGE_URL_BASE: &str = "https://static.wikia.nocookie.net";
+                const IMAGE_URL_BASE: &str = r#""imageUrl":""#;
 
-                let char_index_left = body.find(IMAGE_URL_BASE)?;
+                let char_index_left = body.find(IMAGE_URL_BASE)? + IMAGE_URL_BASE.len();
 
-                let mut char_index_right = char_index_left + IMAGE_URL_BASE.len() + 1;
+                let mut char_index_right = char_index_left;
                 let mut chars = body.chars().skip(char_index_right);
 
                 while chars.next().is_some_and(|ch| ch != '"') {
@@ -89,6 +89,8 @@ impl Source {
 
                 body.get(char_index_left..char_index_right)
             }
-        }
+        };
+
+        url.filter(|url| !url.is_empty())
     }
 }
