@@ -1,7 +1,6 @@
 alternative source apis
     add to readme
     add arg docs
-    benchmark each source
 
 overhaul error handling
     difference between cloudflare 429 vs other 429?
@@ -28,4 +27,5 @@ perf: save raw bytes to file, instead of converting to image, when saving as .gi
 
 refactor: does `date_to_string` need `leading_zeros` parameter?
     can be removed if gocomics accepts leading zeros
+    maybe just replace with manual `format!`
 

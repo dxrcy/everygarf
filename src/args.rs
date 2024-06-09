@@ -81,8 +81,7 @@ pub struct Args {
 
     /// Source for image URLs
     ///
-    /// 'GoComics' is preferred, as it is the official source.
-    /// 'Fandom' is very unreliable, and should only be used if 'GoComics' is down.
+    /// 'GoComics' the only supported source currently
     #[arg(short = 'S', long, requires = "no_cache", default_value_t = everygarf::api::Source::default())]
     pub source: everygarf::api::Source,
 
