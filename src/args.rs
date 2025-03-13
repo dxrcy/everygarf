@@ -17,7 +17,7 @@ pub struct Args {
 
     /// Save images in tree structure
     ///
-    /// `YYYY/MM/DD.png` instead of `YYYY-MM-DD.png`
+    /// `YYYY/MM/DD.gif` instead of `YYYY-MM-DD.gif`
     #[arg(long)]
     pub tree: bool,
 
@@ -121,9 +121,9 @@ pub struct Args {
 #[derive(Default, Clone, Copy, ValueEnum)]
 pub enum ImageFormat {
     #[default]
+    Gif,
     Png,
     Jpg,
-    Gif,
 }
 
 impl Display for ImageFormat {
