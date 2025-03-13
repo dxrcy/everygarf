@@ -1,24 +1,25 @@
-alternative source apis
+ci: automate github releases
+
+doc: alternative source apis
     add to readme
     add arg docs
 
-overhaul error handling
+feat: overhaul error handling
     difference between cloudflare 429 vs other 429?
     document variants
     rename variants
 
-use mpsc to send error to main?
+feat: use mpsc to send error to main?
 
-(chores)
-    document public items
-    readme
-        make better
-    linting
-        standardize `use` statement order
-    refactor and clean up modules
-        too many items in `lib.rs`
+doc: document public items
+doc: readme
+    make better
+chore: linting
+    standardize `use` statement order
+refactor: refactor and clean up modules
+    too many items in `lib.rs`
 
-add tests
+feat(test): add tests
     unit test simple functions
     integration test
 
