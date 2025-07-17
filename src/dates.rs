@@ -33,7 +33,7 @@ pub fn get_dates_between(start: NaiveDate, end: NaiveDate) -> Vec<NaiveDate> {
 }
 
 pub fn date_from_filename(filename: &str) -> Option<NaiveDate> {
-    let name = filename.split('/').last()?.split('.').next()?;
+    let name = filename.split('/').next_back()?.split('.').next()?;
     let mut parts = name.split('-');
 
     let year = parts.next()?;
