@@ -48,17 +48,19 @@ impl Source {
     fn get_page_url(&self, date: NaiveDate) -> String {
         match &self {
             Self::Gocomics => {
-                let date_string = date_to_string(date, "/", false);
+                let date_string = date_to_string(date, "/", true);
                 format!("https://www.gocomics.com/garfield/{}", date_string)
             }
         }
     }
 
     pub fn find_image_url<'a>(&self, body: &'a str) -> Option<&'a str> {
+        const IMAGE_URL_PREFIX: &str = "https://featureassets.gocomics.com";
+        const IMAGE_URL_LENGTH: usize = 74;
         match &self {
             Self::Gocomics => {
-                let char_index = body.find("https://assets.amuniversal.com")?;
-                body.get(char_index..char_index + 63)
+                let char_index = body.find(IMAGE_URL_PREFIX)?;
+                body.get(char_index..char_index + IMAGE_URL_LENGTH)
             }
         }
     }
