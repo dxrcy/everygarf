@@ -38,6 +38,9 @@ const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 
 static mut PROGRESS_COUNT: u32 = 0;
 
+const IMAGE_URL_PREFIX: &str = "https://featureassets.gocomics.com/assets/";
+const IMAGE_URL_LENGTH: usize = 74;
+
 pub fn get_existing_dates(folder: &Path) -> Result<Vec<NaiveDate>, String> {
     Ok(crate::io::get_child_filenames(folder)
         .map_err(|err| format!("read directory - {:#?}", err))?

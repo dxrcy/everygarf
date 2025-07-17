@@ -6,9 +6,9 @@ use chrono::NaiveDate;
 use futures::{io, TryFutureExt};
 use reqwest::Client;
 
-use crate::colors::*;
 use crate::dates::date_from_filename;
 use crate::format_request_error;
+use crate::{colors::*, IMAGE_URL_PREFIX};
 
 #[derive(Clone)]
 pub struct DateUrlCached {
@@ -84,16 +84,14 @@ pub fn append_cache_file(date: NaiveDate, image_url: &str, cache_file: &str) -> 
     Ok(())
 }
 
-const IMAGE_URL_BASE: &str = "https://assets.amuniversal.com/";
-
 fn minify_image_url(url: &str) -> &str {
-    url.strip_prefix(IMAGE_URL_BASE).unwrap_or(url)
+    url.strip_prefix(IMAGE_URL_PREFIX).unwrap_or(url)
 }
 fn expand_image_url(minified: &str) -> String {
-    if minified.starts_with(IMAGE_URL_BASE) {
+    if minified.starts_with(IMAGE_URL_PREFIX) {
         return minified.to_string();
     }
-    IMAGE_URL_BASE.to_string() + minified
+    IMAGE_URL_PREFIX.to_string() + minified
 }
 
 pub fn clean_cache_file(cache_file: &str) -> io::Result<()> {
