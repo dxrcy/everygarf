@@ -1,20 +1,5 @@
 use chrono::{Datelike, Duration, NaiveDate, NaiveTime, Utc};
 
-/// Convert `NaiveDate` to YYYY/MM/DD format, with '/' being a given string separator, and
-/// optionally includes leading zeros for months and days (Eg. '03')
-pub fn date_to_string(date: NaiveDate, separator: &str, leading_zeros: bool) -> String {
-    let month = date.month();
-    let day = date.day();
-
-    date.year().to_string()
-        + separator
-        + if leading_zeros && month < 10 { "0" } else { "" }
-        + &month.to_string()
-        + separator
-        + if leading_zeros && day < 10 { "0" } else { "" }
-        + &day.to_string()
-}
-
 //TODO: Documention
 pub fn date_month_to_string(date: NaiveDate) -> &'static str {
     match date.month0() {

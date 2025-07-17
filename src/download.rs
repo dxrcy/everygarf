@@ -8,7 +8,6 @@ use std::path::PathBuf;
 use crate::api::Api;
 use crate::cache;
 use crate::colors::*;
-use crate::dates::date_to_string;
 use crate::format_request_error;
 use crate::DateUrlCached;
 use crate::SingleDownloadOptions;
@@ -60,7 +59,7 @@ pub async fn download_image<'a>(
             }
         }
     } else {
-        let filename = date_to_string(date, "-", true) + "." + image_format;
+        let filename = format!("{}.{}", date.format("%Y-%m-%d"), image_format);
         folder.join(filename)
     };
 

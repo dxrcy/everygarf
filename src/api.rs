@@ -4,8 +4,6 @@ use chrono::NaiveDate;
 use clap::ValueEnum;
 use reqwest::Client;
 
-use crate::dates::date_to_string;
-
 #[derive(Clone, Copy, Debug)]
 pub struct Api<'a> {
     pub source: Source,
@@ -48,8 +46,10 @@ impl Source {
     fn get_page_url(&self, date: NaiveDate) -> String {
         match &self {
             Self::Gocomics => {
-                let date_string = date_to_string(date, "/", true);
-                format!("https://www.gocomics.com/garfield/{}", date_string)
+                format!(
+                    "https://www.gocomics.com/garfield/{}",
+                    date.format("%Y/%m/%d")
+                )
             }
         }
     }
