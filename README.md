@@ -2,6 +2,8 @@
 
 Concurrently download every Garfield comic to date.
 
+> I am currently rewriting this from scratch: [here](https://github.com/dxrcy/everygarf3)
+
 ## Stats
 
 - Download size: 4.9GB
